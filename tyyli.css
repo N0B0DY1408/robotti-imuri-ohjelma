@@ -1,3 +1,7 @@
+:root { /* pannaan tähän kaikki värit jota käytetään vaitsi perusvärit */
+    --kpedu-sininen: #00a4e4;
+}
+
 .main {
     background-color: white;
     color: black;
