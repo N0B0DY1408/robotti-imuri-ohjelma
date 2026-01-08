@@ -12,3 +12,5 @@ meille ideana annettin että sen voisi esim qr-koodin kautta saada varrattua nii
 
 Aloitus juttua:
 Suunnitellua porukalla nyt niin että sivua tullaan käyttämään pääsääntöisesti puhelimella niin sivut niin että ne toimivat puhelimella parhaiten. Suunnitelmana myös on että sivut olisivat saman tyyliset kuin kpedulla. Loginiin/sign uppiin myös kentät puhelinnumerolle ja omalle huone numerolle niin että robottia varatessa ne tulisi automaattisena vaihtoehtona mutta voi kuitenkin muuttaa niitäkin halutessaan toiseen mutta niin että se olisi automaattinen ensimmäinen ehdotus/vaihtoehto
+
+imuri on nimetty Teroksi tai Themis:kseksi kreikan järjestyksen jumalattaren mukaan
