@@ -18,6 +18,9 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 
+print(email)
+
+
 email = "email"
 
 ###tähän sitte vaan lisätään itse lähetettävä sähköposti niin että voidaan sitten viitata lähetettävään sähköpostiin email:ina
