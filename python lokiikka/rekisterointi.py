@@ -1,13 +1,21 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 app = flask(__name__)
 
-@app.route("/")
-def index():
+@app.route("/rekisteröinti", methods=["GET", "POST"])
+def rekisteröinti():
+    email = none
+
+    if request.method == "POST":
+        email = request.form.get("email")
+
     return render_template(
-        "../sivu/rekisteröinti.html",
-        input("email")
-        )
+        "rekisterointi.html",
+        email=email
+    )
+
+if __name__ == "__main__":
+    app.run(debug=True)
 
 
 email = "email"
