@@ -4,34 +4,29 @@ kannattaa olla varma että tämä on suhteellisen
 fiksu ja en tehnyt massiivisia virheitä
 monien salasanoilla
 """
-from hashlib import sha3_256
+import connect # connect.py
+import bcrypt
 
-def häshää_salasana(salasana, salt):
-    # funktio joka häshää annetun salasanan saltilla
-    bytesalasana = salasana.encode("utf-8")
-    häshääjä = sha3_256()
-    häshääjä.update(bytesalasana)
-    häshätty_string = häshääjä.hexdigest()
-    return häshätty_string
 
 def tallenna_salasana(salasana):
-    """
-    kun käyttäjä tekee tilin, tätä käytetään
-    tee randomi salt
-    pane salt ja häshätty salasana sqliteen
-    """
-    pass
+    # käytetty kun käyttäjä tekee tilin
+    bytesalasana = salasana.encode("utf-8")
+    käyttäjän_salt = bcrypt.gensalt()
+    häshätty_salasana = bcrypt.hashpw(bytesalasana, käyttäjän_salt)
+    return käyttäjän_salt, häshätty_salasana
+    # salt, häsh = tallenna_salasana("salasana")
 
-def käytä_salasanaa(salasana, käyttäjänumero):
-    """
-    kun käyttäjän salasanaa käytetään
-    käyttäjänumero valitsee mikä käyttäjä sqlitesta on oikee
-    sen kanssa sitten ota salt ja häsh
-    """
-    pass
+def käytä_salasanaa(salasana, käyttäjänimi):
+    # käytetty kun käyttäjä menee tiliin
+    bytesalasana = salasana.encode("utf-8")
+    tallennettu_hash = "placeholder"
+    tallennettu_salt = "placeholder"
+    häshätty_salasana = bcrypt.hashpw(bytesalasana, tallennettu_salt)
+    return (häshätty_salasana == tallennettu_hash) # jos on oikea salasana tulee True
+    # ei vielä valmis
 
 if __name__ == "__main__":
     # häshäyksen testaukseen
-    häshätty_salasana = häshää_salasana("salasana", "kajnfkjwa")
-    print(häshätty_salasana)
-    print(type(häshätty_salasana))
+    tallennettava_salt, tallennettava_häsh = tallenna_salasana("slasana")
+    print(tallennettava_salt, "salt")
+    print(tallennettava_häsh, "häsh")
