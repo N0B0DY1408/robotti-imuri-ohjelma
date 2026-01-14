@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 
+
 app = flask(__name__)
 
 @app.route("/rekisteröinti", methods=["GET", "POST"])
@@ -23,5 +24,19 @@ print(email)
 
 email = "email"
 
-###tähän sitte vaan lisätään itse lähetettävä sähköposti niin että voidaan sitten viitata lähetettävään sähköpostiin email:ina
+#Sähköposti Vahvistus
+subject = "Koodisi on: [OTP]" #
+body = """<html>
+  <body>
+    <p>Laitetaan Sähkopostiin HTML!</p>
+  </body>
+</html>"""
+sender="terothemis@gmail.com"
+app_password = "" #Google App password Terolle!
+
+def oneTimePassword():
+    pass # string, random, math
+
+def verifyEmail(): #import smtplib, from email.mime.text import MIMEText 
+    pass #
 
