@@ -1,3 +1,5 @@
+import smtplib
+from email.mime.text import MIMEText 
 from flask import Flask, render_template, request
 
 
@@ -19,10 +21,9 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 
-print(email)
 
 
-email = "email"
+email="email"
 
 #Sähköposti Vahvistus
 subject = "Koodisi on: [OTP]" #
@@ -32,11 +33,12 @@ body = """<html>
   </body>
 </html>"""
 sender="terothemis@gmail.com"
-app_password = "" #Google App password Terolle!
-
-def oneTimePassword():
-    pass # string, random, math
-
-def verifyEmail(): #import smtplib, from email.mime.text import MIMEText 
-    pass #
-
+app_password = "mnxd qfjb ayqz ukxn" 
+html_message = MIMEText(body, 'html')
+html_message['Subject'] = subject
+html_message['From'] = email
+html_message['To'] = email
+with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+    server.login(sender, app_password)
+    server.sendmail(email, email, html_message.as_string())
+print("gg")
