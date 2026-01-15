@@ -2,7 +2,26 @@
     --kpedu-sininen: #00a4e4;
 }
 
-.main {
+main {
     background-color: white;
     color: black;
+}
+
+
+#logo {
+    height: 80;
+    width: 282;
+    margin-right: 200px;
+}
+
+header {
+    display: flex;
+}
+
+#teksti {
+    text-align: center;
+}
+
+nav {
+    margin-top: 50px;
 }
