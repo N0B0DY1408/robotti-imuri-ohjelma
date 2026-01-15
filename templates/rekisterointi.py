@@ -3,9 +3,10 @@ from email.mime.text import MIMEText
 from flask import Flask, render_template, request
 
 
-app = Flask(__name__)
+app = Flask(__name__,
+template_folder="sivut")
 
-@app.route("/rekisterointi", methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
 def rekisterointi():
     email = None
 
