@@ -1,32 +1,26 @@
-"""
-tiedosto häshäys ja salasana juttuihin
-kannattaa olla varma että tämä on suhteellisen
-fiksu ja en tehnyt massiivisia virheitä
-monien salasanoilla
-"""
+# tiedosto häshäys ja salasana juttuihin
+# kannattaa olla varma että tämä on suhteellisen
+# fiksu ja en tehnyt massiivisia virheitä
+# monien salasanoilla
+
 import connect # connect.py
 import bcrypt
 
+# minulle on ilmoitettu että tämä tiedosto on mahdollisesti turha yippii!
 
-def tallenna_salasana(salasana):
+def save_password(password):
     # käytetty kun käyttäjä tekee tilin
-    bytesalasana = salasana.encode("utf-8")
-    käyttäjän_salt = bcrypt.gensalt()
-    häshätty_salasana = bcrypt.hashpw(bytesalasana, käyttäjän_salt)
-    return käyttäjän_salt, häshätty_salasana
+    bytepassword = password.encode("utf-8")
+    user_salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(bytepassword, user_salt)
+    return user_salt, hashed_password
     # salt, häsh = tallenna_salasana("salasana")
 
-def käytä_salasanaa(salasana, käyttäjänimi):
+def use_password(password, username):
     # käytetty kun käyttäjä menee tiliin
-    bytesalasana = salasana.encode("utf-8")
-    tallennettu_hash = "placeholder"
-    tallennettu_salt = "placeholder"
-    häshätty_salasana = bcrypt.hashpw(bytesalasana, tallennettu_salt)
-    return (häshätty_salasana == tallennettu_hash) # jos on oikea salasana tulee True
+    bytepassword = password.encode("utf-8")
+    saved_hash = "placeholder"
+    saved_salt = "placeholder"
+    new_hash = bcrypt.hashpw(bytepassword, saved_salt)
+    return (new_hash == saved_hash) # jos on oikea salasana tulee True
     # ei vielä valmis
-
-if __name__ == "__main__":
-    # häshäyksen testaukseen
-    tallennettava_salt, tallennettava_häsh = tallenna_salasana("slasana")
-    print(tallennettava_salt, "salt")
-    print(tallennettava_häsh, "häsh")
