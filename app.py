@@ -37,7 +37,7 @@ def email_login():
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
             server.login(sender, app_password)
             server.sendmail(sender, email, html_message.as_string())   
-        print("gg")
+        print("Email send")
 
     return render_template(
         "login-register.html",
