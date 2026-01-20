@@ -29,11 +29,11 @@ def rekisterointi():
         app_password = "xxqe cpsw uzrv tbhw" 
         html_message = MIMEText(body, 'html')
         html_message['Subject'] = subject
-        html_message['From'] = receiver
+        html_message['From'] = sender
         html_message['To'] = email
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
             server.login(sender, app_password)
-            server.sendmail(receiver, email, html_message.as_string())   
+            server.sendmail(sender, email, html_message.as_string())   
         print("gg")
 
     return render_template(
