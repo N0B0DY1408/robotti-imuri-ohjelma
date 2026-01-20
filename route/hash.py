@@ -11,6 +11,8 @@ def save_password(password):
     bytepassword = password.encode("utf-8")
     user_salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(bytepassword, user_salt)
+    user_salt = user_salt.decode("utf-8")
+    hashed_password = hashed_password.decode("utf-8")
     return user_salt, hashed_password
     # salt, häsh = tallenna_salasana("salasana")
 
