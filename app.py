@@ -1,22 +1,22 @@
+#muutuja_esimerkki
 import smtplib
 from email.mime.text import MIMEText 
 import secrets
 import string
 from flask import Flask, render_template, request
 
-
 app = Flask(__name__,
 template_folder="templates")
 
 @app.route("/", methods=["GET", "POST"])
-def Emaillogin():
+def email_login():
     
     email = None
 
     if request.method == "POST":
         email = request.form.get("email")
 
-        # receiver muuttuja on minne sähköposti lähetetään
+        # email muuttuja on minne sähköposti lähetetään
         # pitää saada html inputista sähköposti
         print("POST tuli perille")
         print(email)
