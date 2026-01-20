@@ -1,9 +1,12 @@
 #muutuja_esimerkki
 import smtplib
 from email.mime.text import MIMEText 
-import secrets
+import random
 import string
 from flask import Flask, render_template, request
+
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
 
 app = Flask(__name__,
 template_folder="templates")
@@ -20,7 +23,7 @@ def email_login():
         # pitää saada html inputista sähköposti
         print("POST tuli perille")
         print(email)
-        verify_code = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(6))
+        verify_code = id_generator
         #Sähköposti Vahvistus
         subject = f"Koodisi on: [{verify_code}]" 
         body = f"""<html>
