@@ -37,7 +37,7 @@ def rekisterointi():
         print("gg")
 
     return render_template(
-        "login-register.html",
+        "index.html",
         email=email
     )
 

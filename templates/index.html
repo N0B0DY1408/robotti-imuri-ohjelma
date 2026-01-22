@@ -15,14 +15,23 @@
 
     <nav>
         <!---navigointi mahdollisten sivujen välillä ja sign uppi ja kirjautuminen-->
-        <a href="login-register.html">Kirjaudu/rekisteröidy</a>
+        <button id="login" onclick="popup()">Kirjaudu/rekisteröidy</a>
 
         <a href="help.html">Apua</a>
     </nav>
 
+    <div class="popup "id="popup">
+        <form class="popupform" method="post">
+            <input type="email" name="email">
+            <button type="submit">lähetä</button>
+        </form>
+    </div>
+
     <body>
         <!---robotin varaus kentät Sähköpostilla. tarkistaa että on kpedu sähköposti ja niin että kpedu on oikeassa kohtaa jotta tunnistaa opettajaksi--->
     </body>
+
+    <script src="script.js"></script>
 
     <aside>
         <!---kuva siitä missä se robotti on ollut--->
