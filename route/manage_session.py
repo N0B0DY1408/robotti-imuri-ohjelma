@@ -1,28 +1,29 @@
-from flask import Flask, session
+from flask import Flask, redirect, request, session
+from flask_session import Session
 import connect
-import hash
 
-app = Flask(__name__,
-template_folder="../templates")
+app = Flask(__name__)
 
-app.secret_key = b'b7a9b343607593ce48fd351b034908c89a74c4eaf147811a8b0b8676992a0e0a'
+app.config["SESSION_TYPE"] = "filesystem"     # Väliaikainen vaihta db jossain vaiheesa
+Session(app)
 
-# koodi käytetään kun session id tehdään, poistetaan, tai käytetään
+Session(app)
 
-@app.route("/", methods=["GET", "POST"])
-def is_logged_in(email):
-    if 'email' in session:
-        return f'Logged in as {session["email"]}'
-    else:
-        session['email'] = email
-        return 'You are not logged in'
+@app.route("/")
+def index():
+    if not session.get("name"):
+        return "<p>need to login</p>"
+    return f"<p>logged in as {session["name"]}</p>"
 
-def make_session_id(email):
-    random_string = "testvalue"
-    user_salt, user_hash = hash.save_password(random_string)
-    # update the vgalues in the dee bee
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    session["name"] = "testName"
+    return redirect("/")
 
-    # tee pitkä string ja salt, tallenna häshätty string ja salt
+@app.route("/logout")
+def logout():
+    session["name"] = None
+    return redirect("/")
 
 if __name__ == "__main__":
     app.run(debug=True)
