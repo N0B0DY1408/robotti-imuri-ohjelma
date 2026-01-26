@@ -1,15 +1,20 @@
 #muutuja_esimerkki
 import smtplib
-from email.mime.text import MIMEText 
+from email.mime.text import MIMEText
 import random
 import string
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
+from flask_session import Session # spaghattayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+from route import connect, manage_session
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
 app = Flask(__name__,
-template_folder="templates")
+template_folder=connect.template_folder)
+
+app.config["SESSION_TYPE"] = "filesystem"     # Väliaikainen vaihta db jossain vaiheesa
+Session(app)
 
 @app.route("/", methods=["GET", "POST"])
 def email_login():
@@ -39,13 +44,25 @@ def email_login():
         html_message['To'] = email
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
             server.login(sender, app_password)
-            server.sendmail(sender, email, html_message.as_string())   
+            server.sendmail(sender, email, html_message.as_string())
         print("Email send")
 
     return render_template(
-        "login-register.html",
+        "index.html",
         email=email
     )
+
+@app.route("/logout", methods=["GET", "POST"])
+def logout():
+    manage_session.set_session()
+    return redirect("/")
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    # pane ylempään app route / kohtaan kun sen login juttu on valmis
+    manage_session.set_session("testmail")
+    return redirect("/")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
