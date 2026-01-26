@@ -4,17 +4,21 @@ from email.mime.text import MIMEText
 import random
 import string
 from flask import Flask, render_template, request, redirect
-from flask_session import Session # spaghattayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+from flask_session import Session
 from route import connect, manage_session
-
-def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
-    return ''.join(random.choice(chars) for _ in range(size))
 
 app = Flask(__name__,
 template_folder=connect.template_folder)
 
-app.config["SESSION_TYPE"] = "filesystem"     # Väliaikainen vaihta db jossain vaiheesa
-Session(app)
+app.config["SESSION_TYPE"] = "filesystem" # Väliaikainen vaihta db jossain vaiheesa
+# mahdollisesti voisi tehdä erillisen tiedoston app.configeille
+# https://flask.palletsprojects.com/en/stable/config/
+
+Session(app) # tämä on mihin tarvittiin flask_session
+
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+    # id generator email koodeihin
 
 @app.route("/", methods=["GET", "POST"])
 def email_login():
@@ -30,14 +34,14 @@ def email_login():
         print(email)
         verify_code = id_generator
         #Sähköposti Vahvistus
-        subject = f"Koodisi on: [{verify_code}]" 
+        subject = f"Koodisi on: [{verify_code}]"
         body = f"""<html>
         <body>
             <p>"Koodisi on: [{verify_code}]" </p>
         </body>
         </html>"""
         sender="terothemis@gmail.com"
-        app_password = "xxqe cpsw uzrv tbhw" 
+        app_password = "xxqe cpsw uzrv tbhw"
         html_message = MIMEText(body, 'html')
         html_message['Subject'] = subject
         html_message['From'] = sender
@@ -53,7 +57,7 @@ def email_login():
     )
 
 @app.route("/logout", methods=["GET", "POST"])
-def logout():
+def logout(): # jos menee /logout sivulle kirjaudut ulos
     manage_session.set_session()
     return redirect("/")
 
