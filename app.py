@@ -32,24 +32,27 @@ def email_login():
         # pitää saada html inputista sähköposti
         print("POST tuli perille")
         print(email)
-        verify_code = id_generator
-        #Sähköposti Vahvistus
-        subject = f"Koodisi on: [{verify_code}]"
-        body = f"""<html>
-        <body>
-            <p>"Koodisi on: [{verify_code}]" </p>
-        </body>
-        </html>"""
-        sender="terothemis@gmail.com"
-        app_password = "xxqe cpsw uzrv tbhw"
-        html_message = MIMEText(body, 'html')
-        html_message['Subject'] = subject
-        html_message['From'] = sender
-        html_message['To'] = email
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
-            server.login(sender, app_password)
-            server.sendmail(sender, email, html_message.as_string())
-        print("Email send")
+
+        if "@student.kpedu.fi" in email:
+            verify_code = id_generator
+            #Sähköposti Vahvistus
+            subject = f"Koodisi on: [{verify_code}]"
+            body = f"""<html>
+            <body>
+                <p>"Koodisi on: [{verify_code}]" </p>
+            </body>
+            </html>"""
+            sender="terothemis@gmail.com"
+            app_password = "xxqe cpsw uzrv tbhw"
+            html_message = MIMEText(body, 'html')
+            html_message['Subject'] = subject
+            html_message['From'] = sender
+            html_message['To'] = email
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+                server.login(sender, app_password)
+                server.sendmail(sender, email, html_message.as_string())
+            print("Email send")
+        else: print("anna oikea sähköposti") and exit
 
     return render_template(
         "index.html",
