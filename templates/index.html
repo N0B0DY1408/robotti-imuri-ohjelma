@@ -15,17 +15,22 @@
 
     <nav>
         <!---navigointi mahdollisten sivujen välillä ja sign uppi ja kirjautuminen-->
+        <dialog>
+            <button autofocus>Sulje</button>
+            <p>Kirjoita sähköpostisi</p>
+            <form class="popupform" method="post">
+                <input type="email" name="email">
+                <button type="submit">lähetä</button>
+            </form>
+        </dialog>
         <button id="login" onclick="popup()">Kirjaudu/rekisteröidy</button>
+
 
         <button href="help.html">Apua</button>
     </nav>
 
-    <div class="popup "id="popup">
-        <form class="popupform" method="post">
-            <input type="email" name="email">
-            <button type="submit">lähetä</button>
-        </form>
-    </div>
+    
+        
 
     <body>
         <!---robotin varaus kentät Sähköpostilla. tarkistaa että on kpedu sähköposti ja niin että kpedu on oikeassa kohtaa jotta tunnistaa opettajaksi--->
