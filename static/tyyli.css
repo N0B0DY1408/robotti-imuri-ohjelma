@@ -30,7 +30,7 @@ nav {
     visibility: hidden;
 }
 
-.popup .show {
+.popup show {
     visibility: visible;
     -webkit-animation: fadeIn 1s;
     animation: fadeIn 1s
@@ -52,7 +52,7 @@ nav {
 }
 
 /* Popup arrow */
-.popup .popupform::after {
+.popup .popupform show {
   content: "";
   position: absolute;
   top: 100%;
