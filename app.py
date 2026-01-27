@@ -64,12 +64,16 @@ def logout(): # jos menee /logout sivulle kirjaudut ulos
     manage_session.set_session()
     return redirect("/")
 
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    # pane ylempään app route / kohtaan kun sen login juttu on valmis
-    manage_session.set_session("testmail")
-    return redirect("/")
-
+def login(email): # tekee tilin jos tili ei ole olemassa sitten antaa keksin
+    accountcheck = connect.tira_cur.execute(f"SELECT sähköposti FROM käyttäjät WHERE sähköposti='{email}'")
+    # if email not in käyttäjät sähköposti ^
+    # en ole varma mutta f string tässä voi olla tietoturva riski mutta se toimii
+    if accountcheck.fetchone() is None:
+        data = [email]
+        connect.tira_cur.execute("INSERT INTO käyttäjät(sähköposti) VALUES (?)", data)
+        # jostain syystä ottaa tuplen sen sijaan kun stringin
+        connect.tira_con.commit()
+    manage_session.set_session(email) # sun sessio on nyt sun email
 
 if __name__ == "__main__":
     app.run(debug=True)
@@ -77,3 +81,4 @@ if __name__ == "__main__":
 """Cookie check
 if 'country' in request.cookies:
 """
+# ^^^ ???
