@@ -17,24 +17,27 @@ def rekisterointi():
         # pitää saada html inputista sähköposti
         print("POST tuli perille")
         print(email)
-        
-        #Sähköposti Vahvistus
-        subject = "Koodisi on: [OTP]" #
-        body = """<html>
-        <body>
-            <p>Laitetaan Sähkopostiin HTML!</p>
-        </body>
-        </html>"""
-        sender="terothemis@gmail.com"
-        app_password = "xxqe cpsw uzrv tbhw" 
-        html_message = MIMEText(body, 'html')
-        html_message['Subject'] = subject
-        html_message['From'] = sender
-        html_message['To'] = email
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
-            server.login(sender, app_password)
-            server.sendmail(sender, email, html_message.as_string())   
-        print("gg")
+
+            if "@student.kpedu.fi" in email:
+                
+                #Sähköposti Vahvistus
+                subject = "Koodisi on: [OTP]" #
+                body = """<html>
+                <body>
+                    <p>Laitetaan Sähkopostiin HTML!</p>
+                </body>
+                </html>"""
+                sender="terothemis@gmail.com"
+                app_password = "xxqe cpsw uzrv tbhw" 
+                html_message = MIMEText(body, 'html')
+                html_message['Subject'] = subject
+                html_message['From'] = sender
+                html_message['To'] = email
+                with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+                    server.login(sender, app_password)
+                    server.sendmail(sender, email, html_message.as_string())   
+                print("gg")
+            else: print("Anna oikeanlainen sähköposti") and exit
 
     return render_template(
         "index.html",
