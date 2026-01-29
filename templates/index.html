@@ -15,15 +15,27 @@
 
     <nav>
         <!---navigointi mahdollisten sivujen välillä ja sign uppi ja kirjautuminen-->
-        <dialog>
-            <button autofocus>Sulje</button>
+        <dialog id="loginDialog">
+            <button id="closeDialog" autofocus>Sulje</button>
+
             <p>Kirjoita sähköpostisi</p>
-            <form class="popupform" method="post">
-                <input type="email" name="email">
-                <button type="submit">lähetä</button>
+
+            <form id="popupForm">
+                <input type="email" name="email" required>
+                <button type="submit" class="send">Lähetä</button>
             </form>
+
+            <form id="codeForm" hidden>
+                <p>Syötä sähköpostiisi lähetetty koodi</p>
+                <input type="text" name="code" required>
+                <button type="submit">Vahvista</button>
+            </form>
+
+            <div id="result" hidden></div>
+
         </dialog>
-        <button id="login" onclick="popup()">Kirjaudu/rekisteröidy</button>
+
+        <button id="login">Kirjaudu/rekisteröidy</button>
 
 
         <button href="help.html">Apua</button>
