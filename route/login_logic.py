@@ -6,8 +6,19 @@ except ImportError:
     from route import connect
 # kiitos tyyppi stack overflowissa
 
-def add_code():
-    pass
+def add_code(email, code):
+    """
+    tallentaa väliaikaisen koodin sqliteen
+    """
+    right_now = datetime.now(timezone.utc).replace(microsecond=0)
+    code_time = timedelta(minutes=15) # 15 minuuttii
+    code_end_time = (right_now + code_time).timestamp()
+    print(code_end_time)
+    data = [email, code_end_time, code]
+    connect.tira_cur.execute("INSERT INTO email_koodit VALUES(?,?,?)", data)
+    connect.tira_con.commit()
+
+
 
 def use_code(code):
     """
@@ -16,7 +27,6 @@ def use_code(code):
     emailin jos koodi on oikein, poistaa myös oikeat koodit kun käytetty
     mahdottoman pienessä mahdollisuudessa että on kaksi käyttäjää
     jolla on sama koodi samaan aikaan sinä kirjaudut ensimmäisenä
-    käyttää utc aikoja ja formatoi unix aikaan
     """
     right_now = datetime.now(timezone.utc).replace(microsecond=0)
     right_now = right_now.timestamp()
@@ -38,9 +48,10 @@ def use_code(code):
 
 
 if __name__ == "__main__":
-    pass
-    #baba = use_code(654321)
-    #if baba:
-    #    print(baba)
-    #else:
-    #    print("väärin")
+    # nopee test koodi joka vaihtelee jos poistaa vai panee koodin
+    baba = use_code(80085)
+    if baba:
+        print(baba)
+    else:
+        print("väärin")
+        add_code("superbobman", 80085)
