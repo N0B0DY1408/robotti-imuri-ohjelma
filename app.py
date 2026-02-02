@@ -5,7 +5,7 @@ import random
 import string
 from flask import Flask, render_template, request, redirect
 from flask_session import Session
-from route import connect, manage_session
+from route import connect, manage_session, login_logic
 
 app = Flask(__name__,
 template_folder=connect.template_folder)
@@ -59,21 +59,35 @@ def email_login():
         email=email
     )
 
+@app.route("/logincheck", methods=["GET", "POST"])
+def logincheck():
+    # debug sivu ennen kun missään muualla on tätä infoo
+    baba = manage_session.isloggedin()
+    return f"<p>{baba}</p>"
+
 @app.route("/logout", methods=["GET", "POST"])
 def logout(): # jos menee /logout sivulle kirjaudut ulos
     manage_session.set_session()
     return redirect("/")
 
-def login(email): # tekee tilin jos tili ei ole olemassa sitten antaa keksin
-    accountcheck = connect.tira_cur.execute(f"SELECT sähköposti FROM käyttäjät WHERE sähköposti='{email}'")
-    # if email not in käyttäjät sähköposti ^
-    # en ole varma mutta f string tässä voi olla tietoturva riski mutta se toimii
-    if accountcheck.fetchone() is None:
-        data = [email]
-        connect.tira_cur.execute("INSERT INTO käyttäjät(sähköposti) VALUES (?)", data)
-        # jostain syystä ottaa tuplen sen sijaan kun stringin
-        connect.tira_con.commit()
-    manage_session.set_session(email) # sun sessio on nyt sun email
+@app.route("/lol", methods=["GET", "POST"])
+def code_login():
+    # debug sivu joka koittaa login tällä koodilla
+    login(80085)
+    return redirect ("logincheck")
+
+def login(code): # tekee tilin jos tili ei ole olemassa sitten antaa keksin
+    email = login_logic.use_code(code)
+    if email:
+        accountcheck = connect.tira_cur.execute(f"SELECT sähköposti FROM käyttäjät WHERE sähköposti='{email}'")
+        # if email not in käyttäjät sähköposti ^
+        # en ole varma mutta f string tässä voi olla tietoturva riski mutta se toimii
+        if accountcheck.fetchone() is None:
+            data = [email]
+            connect.tira_cur.execute("INSERT INTO käyttäjät(sähköposti) VALUES (?)", data)
+            # jostain syystä ottaa tuplen sen sijaan kun stringin
+            connect.tira_con.commit()
+        manage_session.set_session(email) # sun sessio on nyt sun email
 
 if __name__ == "__main__":
     app.run(debug=True)
