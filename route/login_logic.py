@@ -15,7 +15,7 @@ def add_code(email, code):
     code_end_time = (right_now + code_time).timestamp()
     print(code_end_time)
     data = [email, code_end_time, code]
-    connect.tira_cur.execute("INSERT INTO email_koodit VALUES(?,?,?)", data)
+    connect.tira_cur.execute("INSERT INTO Login VALUES(?,?,?)", data)
     connect.tira_con.commit()
 
 
@@ -32,17 +32,17 @@ def use_code(code):
     right_now = right_now.timestamp()
     right_now_as_list = [right_now] # en vieläkään tiedä miksi tämän pitää olla list lol
     # poistaa vanhat
-    connect.tira_cur.execute("DELETE FROM email_koodit WHERE loppumisaika < ?", right_now_as_list)
+    connect.tira_cur.execute("DELETE FROM Login WHERE session_end < ?", right_now_as_list)
     connect.tira_con.commit()
 
     code_as_list = [code]
-    email_of_code = connect.tira_cur.execute("SELECT email FROM email_koodit WHERE koodi = ?", code_as_list).fetchone()
+    email_of_code = connect.tira_cur.execute("SELECT email FROM Login WHERE codes = ?", code_as_list).fetchone()
     if email_of_code is None:
         return False
     else:
         emailstring = (email_of_code[0])
         # poistaa käytetyn koodin
-        connect.tira_cur.execute("DELETE FROM email_koodit WHERE email = ?", email_of_code)
+        connect.tira_cur.execute("DELETE FROM Login WHERE email = ?", email_of_code)
         connect.tira_con.commit()
         return emailstring
 
