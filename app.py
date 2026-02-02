@@ -79,12 +79,11 @@ def code_login():
 def login(code): # tekee tilin jos tili ei ole olemassa sitten antaa keksin
     email = login_logic.use_code(code)
     if email:
-        accountcheck = connect.tira_cur.execute(f"SELECT sähköposti FROM käyttäjät WHERE sähköposti='{email}'")
-        # if email not in käyttäjät sähköposti ^
-        # en ole varma mutta f string tässä voi olla tietoturva riski mutta se toimii
+        email_as_list = [email]
+        accountcheck = connect.tira_cur.execute("SELECT email FROM Users WHERE email= ?", email_as_list)
+        # ^ jos tällä scriptillä on joku omituinen virhe tämä on varmaan syy
         if accountcheck.fetchone() is None:
-            data = [email]
-            connect.tira_cur.execute("INSERT INTO käyttäjät(sähköposti) VALUES (?)", data)
+            connect.tira_cur.execute("INSERT INTO Users(email) VALUES (?)", email_as_list)
             # jostain syystä ottaa tuplen sen sijaan kun stringin
             connect.tira_con.commit()
         manage_session.set_session(email) # sun sessio on nyt sun email
