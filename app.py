@@ -20,6 +20,8 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
     # id generator email koodeihin
 
+verify_code = id_generator
+
 @app.route("/", methods=["GET", "POST"])
 def email_login():
     
@@ -34,7 +36,6 @@ def email_login():
         print(email)
 
         if "@student.kpedu.fi" in email:
-            verify_code = id_generator
             #Sähköposti Vahvistus
             subject = f"Koodisi on: [{verify_code}]"
             body = f"""<html>

@@ -29,7 +29,7 @@ popupForm.addEventListener("submit", (e) => {
     codeForm.hidden = false;
 });
 
-// 2️⃣ KOODI
+
 codeForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
