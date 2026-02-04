@@ -77,6 +77,31 @@ def code_login():
     login(80085)
     return redirect ("logincheck")
 
+@app.route("/varaus", methods=["GET", "POST"])
+def reserve_page():
+    # sivu vuoron varaukseen
+
+    #user = manage_session.isloggedin()
+    #if not user: # jos et ole kirjautunut et voi olla sivulla
+    #    return redirect("/")
+    # ^tarkistaa jos on kirjautunut
+    # kommentoitu testauksen takia
+    robots1 = connect.tira_cur.execute("SELECT device FROM devices").fetchall()
+    # robots2 on vaan kunnolla formatoitu
+    robots2 = connect.r_sqlite_of(robots1)
+
+    if request.method == "POST":
+        robotit = request.form.get("robotit")
+        the_date = request.form.get("the_date")
+        the_time = request.form.get("the_time")
+        length = request.form.get("length")
+        print(robotit,the_date,the_time,length)
+        # pitää tehdä tarkistuksia ja sitten tallentaa sqlite historiaan
+        # aiotaan näyttää sqlitest tärkee historia sivulla
+    return render_template(
+        "varaus.html", robots=robots2
+    )
+
 def login(code): # tekee tilin jos tili ei ole olemassa sitten antaa keksin
     email = login_logic.use_code(code)
     if email:
