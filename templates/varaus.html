@@ -15,23 +15,20 @@
 
     <nav>
         <!---navigointi mahdollisten sivujen välillä ja sign uppi ja kirjautuminen-->
-        <dialog id="varausDialog">
-            <button autofocus id="closeDialog">Sulje</button>
-            <p>haluatko varmistaa varauksen?</p>
-            <form class="popupform" method="post">
-                <button type="submit">lähetä</button>
-            </form> <!--pop up dialog tässä en testannut ollenkaan-->
-        </dialog>
-        <select name="robotit" id="robottidropdown">
-            <option value="robo1">robo1</option>
-            <option value="robo2">robo2</option>
-        </select>
-        <input type="date" id="varausdate">
-        <label for="varausdate">päivä</label>
-        <input type="time" id="varaustime">
-        <label for="varaustime">kellonaika</label>
-        <input type="number" id="varauspituus">
-        <label for="varauspituus">kuinka monta tuntia</label>
+        <form method="post">
+            <select name="robotit" id="robottidropdown" method="GET",required>
+                {% for robo in robots %}
+                <option value= "{{robo}}" SELECTED>{{robo}}</option>"
+                {% endfor %}
+            </select>
+            <input type="date" name="the_date" id="varausdate",required>
+            <label for="varausdate">päivä</label>
+            <input type="time" name="the_time"id="varaustime",required>
+            <label for="varaustime">kellonaika</label>
+            <input type="number" name="length" id="varauspituus",required>
+            <label for="varauspituus">kuinka monta tuntia</label>
+            <input type="submit" id="varaa" value="varaa">
+        </form>
 
         <button href="help.html">Apua</button>
         <br>
