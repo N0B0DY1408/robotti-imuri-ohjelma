@@ -6,6 +6,8 @@ const popupForm = document.getElementById("popupForm");
 const codeForm = document.getElementById("codeForm");
 const result = document.getElementById("result");
 
+import id_generator from "app.py";
+
 
 showButton.addEventListener("click", () => {
     dialog.showModal();
@@ -35,7 +37,7 @@ codeForm.addEventListener("submit", (e) => {
 
     const userCode = codeForm.code.value;
 
-    if (userCode !== sentCode) {
+    if (userCode !== id_generator()) {
         alert("Väärä koodi");
         return;
     }
