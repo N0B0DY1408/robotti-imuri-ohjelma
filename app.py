@@ -3,9 +3,10 @@ import smtplib
 from email.mime.text import MIMEText
 import random
 import string
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session, jsonify
 from flask_session import Session
 from route import connect, manage_session, login_logic
+
 
 app = Flask(__name__,
 template_folder=connect.template_folder)
@@ -14,13 +15,15 @@ app.config["SESSION_TYPE"] = "filesystem" # Väliaikainen vaihta db jossain vaih
 # mahdollisesti voisi tehdä erillisen tiedoston app.configeille
 # https://flask.palletsprojects.com/en/stable/config/
 
+app.secret_key = "super-secret-key-change-this"
+
 Session(app) # tämä on mihin tarvittiin flask_session
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
     # id generator email koodeihin
 
-verify_code = id_generator
+verify_code = id_generator()
 
 @app.route("/", methods=["GET", "POST"])
 def email_login():
@@ -28,19 +31,24 @@ def email_login():
     email = None
 
     if request.method == "POST":
-        email = request.form.get("email")
+        email = request.json.get("email")
 
         # email muuttuja on minne sähköposti lähetetään
         # pitää saada html inputista sähköposti
         print("POST tuli perille")
         print(email)
 
-        if "@student.kpedu.fi" in email:
+        if not email or "@student.kpedu.fi" not in email:
+            return jsonify({"status": "error", "message": "Syötä kpedu-sähköposti"})
+        else:
+            code = id_generator()
+            session["verify_code"] = code
+            session["email"] = email
             #Sähköposti Vahvistus
-            subject = f"Koodisi on: [{verify_code}]"
+            subject = f"Koodisi on: [{code}]"
             body = f"""<html>
             <body>
-                <p>"Koodisi on: [{verify_code}]" </p>
+                <p>"Koodisi on: [{code}]" </p>
             </body>
             </html>"""
             sender="terothemis@gmail.com"
@@ -53,12 +61,26 @@ def email_login():
                 server.login(sender, app_password)
                 server.sendmail(sender, email, html_message.as_string())
             print("Email send")
-        else: print("anna oikea sähköposti") and exit
+
+            
+
+        return jsonify({"status": "sent"})
 
     return render_template(
         "index.html",
         email=email
     )
+
+@app.route("/verify", methods=["POST"])
+def verify():
+    user_code = request.json.get("code")
+
+    if user_code == session.get("verify_code"):
+        login(user_code)
+        return {"status": "ok"}
+
+    return {"status": "error"}
+
 
 @app.route("/logincheck", methods=["GET", "POST"])
 def logincheck():
@@ -74,8 +96,8 @@ def logout(): # jos menee /logout sivulle kirjaudut ulos
 @app.route("/lol", methods=["GET", "POST"])
 def code_login():
     # debug sivu joka koittaa login tällä koodilla
-    login(80085)
-    return redirect ("logincheck")
+    login("80085")
+    return redirect ("/logincheck")
 
 @app.route("/varaus", methods=["GET", "POST"])
 def reserve_page():

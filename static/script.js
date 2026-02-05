@@ -6,7 +6,8 @@ const popupForm = document.getElementById("popupForm");
 const codeForm = document.getElementById("codeForm");
 const result = document.getElementById("result");
 
-import id_generator from "app.py";
+// id_generator = koodi joka on siellä tietokannassa joka on tullut app.pyn kautta
+
 
 
 showButton.addEventListener("click", () => {
@@ -17,32 +18,61 @@ closeButton.addEventListener("click", () => {
     dialog.close();
 });
 
-popupForm.addEventListener("submit", (e) => {
+popupForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const email = popupForm.email.value;
 
-    if (!email.endsWith("kpedu.fi")) {
+    if (!email.endsWith("@student.kpedu.fi")) {
         alert("Syötä kpedu-sähköposti");
         return;
     }
 
-    popupForm.hidden = true;
-    codeForm.hidden = false;
+    const res = await fetch("/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+    alert("Palvelinvirhe");
+    return;
+    }
+
+
+
+    if (data.status === "sent") {
+        popupForm.hidden = true;
+        codeForm.hidden = false;
+    }
 });
 
 
-codeForm.addEventListener("submit", (e) => {
+codeForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const userCode = codeForm.code.value;
 
-    if (userCode !== id_generator()) {
-        alert("Väärä koodi");
-        return;
-    }
+    const res = await fetch("/verify", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code: userCode }),
+    });
 
-    codeForm.hidden = true;
-    result.hidden = false;
-    result.textContent = "Kirjautuminen onnistui 🎉";
+    const data = await res.json();
+
+    if (data.status === "ok") {
+        codeForm.hidden = true;
+        result.hidden = false;
+        result.textContent = "Kirjautuminen onnistui 🎉";
+    } else {
+        alert("Väärä koodi");
+    }
 });
+
