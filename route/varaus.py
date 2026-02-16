@@ -1,47 +1,70 @@
-from datetime import datetime, timezone, timedelta, date
+from datetime import datetime, timezone
 try:
     import connect
+    import manage_session
 except ImportError:
     from route import connect
+    from route import manage_session
 
-def pvm_aika_pituus_format(pvm, aika, pituus):
+def ticket_varaus(laite):
     """
-    formatoi datetime.strptimen avulla pvm, aika, ja pituus
-    utc formatoituihin alku ja loppu aikoihin
+    varaa nykyhetkestä siihen että itse lopetat
+    1. devices availability = False
+    2. uusi historia entry
+        laite = valittu robotti (id muodossa)
+        käyttäjä = sessio email (id muodossa)
+        start = nykyaika (timestamp)
+        end = 0
     """
-    uus_alku = datetime.strptime(f"{pvm};{aika}", "%Y-%m-%d;%H:%M").astimezone(timezone.utc)
-    pituus = timedelta(hours=pituus)
-    uus_lop = (uus_alku + pituus)
-    return uus_alku, uus_lop
 
+    # ottaa session emailin
+    try:
+        email = manage_session.isloggedin()
+    except RuntimeError:
+        print("ei yhteys serveriin")
+        return False
+        #email = "goldenbaba"
 
-def varaus_check(laite, pvm, aika, pituus): # ottaa local aikana pvm, aika, ja pituus loppuun
-    # tarkistaa että ei varaa muitten aikojen päälle
-
-    if pituus > 10:
-        return "Liian pitkä"
-    # jos varaus kestää >10h ei pysty, koska kuka käyttää robottia 11 tuntia :clueless:
-    # ok mutta joo kommentoi pois tai pane vaihtoehto tai vaihda max pituutta jos pitää
-
-    uus_alku, uus_lop = pvm_aika_pituus_format(pvm, aika, pituus)
-
-    uus_alku2 = uus_alku.timestamp()
-    uus_lop2 = uus_lop.timestamp()
-
+    # tässä me asetetaan devices availability = 0 ja otetaan id
     device_as_list = [laite]
-    device_id = connect.tira_cur.execute("SELECT device_id FROM Devices WHERE device = ?", device_as_list).fetchone()
-    db_times = connect.tira_cur.execute("SELECT start, end FROM History WHERE device_id = ?", device_id).fetchall()
-    # ^^^ ottaa laitteen nimen, vaihtaa sen laitteen id, sitten ottaa sillä tärkeät ajat
-    for vara_alku, vara_lop in db_times:
-        # jos vanhan varauksen loppu on uuden aloituksen jälkeen
-        # mutta uuden loppu on ennen vanhaan varauksen aloitusta
-        if vara_lop > uus_alku2 and  uus_lop2 > vara_alku:
-            return "Varaisi päälle"
+    connect.tira_cur.execute("UPDATE Devices SET availability = 0 WHERE device = ?", device_as_list)
+    device_id = connect.tira_cur.execute("SELECT device_id FROM Devices WHERE device= ?", device_as_list).fetchone()
+    device_id = device_id[0]
 
-    # jos varaus toimii palauttaa True jos ei toimi palauttaa stringin joka selittää
-    # pitää muualla panna sqliteen ja mitälie
-    return True
+    # tässä me otetaan käyttäjä id
+    email_as_list = [email]
+    user_id = connect.tira_cur.execute("SELECT user_id FROM Users WHERE email= ?", email_as_list).fetchone()
+    user_id = user_id[0]
+
+    # tässä me asetetaan alku aika
+    right_now = datetime.now(timezone.utc).replace(microsecond=0)
+    right_now_timestamp = right_now.timestamp()
+
+    history_entry = [user_id,device_id,right_now_timestamp,0, "varaus"]
+    connect.tira_cur.execute("INSERT INTO History VALUES(?,?,?,?,?)", history_entry)
+    connect.tira_con.commit()
+
+def remove_ticket_varaus(laite):
+    """ 
+    poistaa tiketti varauksen
+    1. devices availability = True
+    2. Historia entry jossa loppu on 0 ja device id on oikea
+        end = nykyaika
+    """
+    # tässä me asetetaan devices availability = 1 ja otetaan myös id
+    device_as_list = [laite]
+    connect.tira_cur.execute("UPDATE Devices SET availability = 1 WHERE device = ?", device_as_list)
+    device_id = connect.tira_cur.execute("SELECT device_id FROM Devices WHERE device= ?", device_as_list).fetchone()
+    device_id = device_id[0]
+
+    # tässä me päivitetään oikeat historia kohdat nykyaikaan
+    right_now = datetime.now(timezone.utc).replace(microsecond=0)
+    right_now = right_now.timestamp()
+    history_update = [right_now, device_id]
+    connect.tira_cur.execute("UPDATE History SET end = ? WHERE device_id = ? AND end = 0", history_update)
+    connect.tira_con.commit()
+
 
 if __name__ == "__main__":
-    baba = varaus_check("testilaite", "2026-02-12", "12:30", 4.3)
-    print(baba)
+    ticket_varaus("testilaite")
+    #remove_ticket_varaus("testilaite")
