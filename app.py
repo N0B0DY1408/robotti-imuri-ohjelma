@@ -23,7 +23,6 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
     # id generator email koodeihin
 
-verify_code = id_generator()
 
 @app.route("/", methods=["GET", "POST"])
 def email_login():
@@ -37,6 +36,7 @@ def email_login():
         # pitää saada html inputista sähköposti
         print("POST tuli perille")
         print(email)
+        status = "sent"
 
         if not email or "@student.kpedu.fi" not in email:
             return jsonify({"status": "error", "message": "Syötä kpedu-sähköposti"})
@@ -51,20 +51,22 @@ def email_login():
                 <p>"Koodisi on: [{code}]" </p>
             </body>
             </html>"""
-            sender="terothemis@gmail.com"
-            app_password = "xxqe cpsw uzrv tbhw"
+            sender = "Terothemis@roboimuri.com"  # can be anything for now
+            MAILJET_API_KEY = "c1339bf9dc400c563cec58a85974ec00"
+            MAILJET_SECRET_KEY = "5b74079884b1f2006f6af9ceaa3e6be22"
             html_message = MIMEText(body, 'html')
             html_message['Subject'] = subject
             html_message['From'] = sender
             html_message['To'] = email
-            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
-                server.login(sender, app_password)
+            with smtplib.SMTP("in-v3.mailjet.com", 587) as server:
+                server.starttls()
+                server.login(MAILJET_API_KEY, MAILJET_SECRET_KEY)
                 server.sendmail(sender, email, html_message.as_string())
-            print("Email send")
+            print("Email sent")
 
-            
+        return jsonify({"status": "sent", "success": True})
+        
 
-        return jsonify({"status": "sent"})
 
     return render_template(
         "index.html",

@@ -20,18 +20,27 @@
 
             <p>Kirjoita sähköpostisi</p>
 
-            <form id="popupForm">
+            <form id="signupForm">
+                <!---tähän silleen että tarkistaa onko emaili syötetty ja jos on niin se skippaa emailin ja koodin ja kysyy vain nimeä--->
                 <input type="email" name="email" required>
                 <button type="submit" class="send">Lähetä</button>
             </form>
 
             <form id="codeForm" hidden>
-                <p>Syötä sähköpostiisi lähetetty koodi</p>
                 <input type="text" name="code" required>
-                <button type="submit">Vahvista</button>
+                <button type="submit" class="send">Lähetä</button>
             </form>
 
-            <div id="result" hidden></div>
+            <form id="nameForm" hidden>
+                <!---tähän sitte vaan se että se ottaa sen nimen annetusta sähköpostista jotta sen voi syöttää tähän--->
+                <input type="name" name="name" required>
+                <button type="submit" class="send">Lähetä</button>
+            </form>
+
+
+            <div id="onnistui" hidden>
+                <p>Koodi lähetetty sähköpostiisi!</p>
+            </div>
 
         </dialog>
 

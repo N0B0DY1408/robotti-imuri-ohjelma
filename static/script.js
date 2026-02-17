@@ -1,13 +1,8 @@
 const dialog = document.getElementById("loginDialog");
 const showButton = document.getElementById("login");
 const closeButton = document.getElementById("closeDialog");
-
-const popupForm = document.getElementById("popupForm");
-const codeForm = document.getElementById("codeForm");
-const result = document.getElementById("result");
-
-// id_generator = koodi joka on siellä tietokannassa joka on tullut app.pyn kautta
-
+const signupForm = document.getElementById("signupForm");
+const worked = document.getElementById("onnistui");
 
 
 showButton.addEventListener("click", () => {
@@ -23,56 +18,27 @@ popupForm.addEventListener("submit", async (e) => {
 
     const email = popupForm.email.value;
 
-    if (!email.endsWith("@student.kpedu.fi")) {
-        alert("Syötä kpedu-sähköposti");
-        return;
-    }
+    try {
+        const res = await fetch("/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email }),
+        });
 
-    const res = await fetch("/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-    });
+        const data = await res.json();
+        console.log(data); // debug
 
-    const data = await res.json();
+        if (data.success) {
+            popupForm.hidden = true;
+            worked.hidden = false;
+        } else {
+            alert(data.message || "Virhe");
+        }
 
-    if (!res.ok) {
-    alert("Palvelinvirhe");
-    return;
-    }
-
-
-
-    if (data.status === "sent") {
-        popupForm.hidden = true;
-        codeForm.hidden = false;
+    } catch (err) {
+        console.error(err);
+        alert("Jokin meni pieleen");
     }
 });
-
-
-codeForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const userCode = codeForm.code.value;
-
-    const res = await fetch("/verify", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ code: userCode }),
-    });
-
-    const data = await res.json();
-
-    if (data.status === "ok") {
-        codeForm.hidden = true;
-        result.hidden = false;
-        result.textContent = "Kirjautuminen onnistui 🎉";
-    } else {
-        alert("Väärä koodi");
-    }
-});
-
