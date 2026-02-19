@@ -1,5 +1,8 @@
 #muutuja_esimerkki
 import smtplib
+import ssl
+from dotenv import load_dotenv
+import os
 from email.mime.text import MIMEText
 import random
 import string
@@ -7,6 +10,19 @@ from flask import Flask, render_template, request, redirect, session, jsonify
 from flask_session import Session
 from route import connect, manage_session, login_logic
 
+context = ssl.create_default_context()
+
+load_dotenv("salaisetjutut/email.env")
+
+ehost = os.getenv("emailhost")
+eport = int(os.getenv("emailport"))
+euser = os.getenv("emailuser")
+epassword = os.getenv("emailpassword")
+
+print("HOST:", ehost)
+print("PORT:", eport)
+print("USER:", euser)
+print("PASS:", epassword)
 
 app = Flask(__name__,
 template_folder=connect.template_folder)
@@ -14,8 +30,6 @@ template_folder=connect.template_folder)
 app.config["SESSION_TYPE"] = "filesystem" # Väliaikainen vaihta db jossain vaiheesa
 # mahdollisesti voisi tehdä erillisen tiedoston app.configeille
 # https://flask.palletsprojects.com/en/stable/config/
-
-app.secret_key = "super-secret-key-change-this"
 
 Session(app) # tämä on mihin tarvittiin flask_session
 
@@ -52,15 +66,21 @@ def email_login():
             </body>
             </html>"""
             sender = "terothemis1@gmail.com"
-            app_paswword = "your-app-password"  # replace with your app password
+            app_paswword = epassword
             html_message = MIMEText(body, 'html')
             html_message['Subject'] = subject
             html_message['From'] = sender
             html_message['To'] = email
-            with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-                server.login(sender, app_paswword)  # replace with your app password
-                server.sendmail(sender, email, html_message.as_string())
-            print("Email sent")
+            try:
+                with smtplib.SMTP(ehost, eport) as server:
+                    server.starttls(context=context)
+                    server.login(euser, epassword)
+                    server.sendmail(sender, email, html_message.as_string())
+                print("Email sent")
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                return jsonify({"success": False, "message": "Sähköpostin lähetys epäonnistui"})
 
         return jsonify({"status": "sent", "success": True})
         
