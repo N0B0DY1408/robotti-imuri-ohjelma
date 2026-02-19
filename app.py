@@ -65,7 +65,7 @@ def email_login():
                 <p>"Koodisi on: [{code}]" </p>
             </body>
             </html>"""
-            sender = "terothemis1@gmail.com"
+            sender = euser
             app_paswword = epassword
             html_message = MIMEText(body, 'html')
             html_message['Subject'] = subject
