@@ -39,7 +39,7 @@ def email_login():
         status = "sent"
 
         if not email or "@student.kpedu.fi" not in email:
-            return jsonify({"status": "error", "message": "Syötä kpedu-sähköposti"})
+            return jsonify({"success": False, "message": "Syötä kpedu-sähköposti"})
         else:
             code = id_generator()
             session["verify_code"] = code
@@ -51,16 +51,14 @@ def email_login():
                 <p>"Koodisi on: [{code}]" </p>
             </body>
             </html>"""
-            sender = "Terothemis@roboimuri.com"  # can be anything for now
-            MAILJET_API_KEY = "c1339bf9dc400c563cec58a85974ec00"
-            MAILJET_SECRET_KEY = "5b74079884b1f2006f6af9ceaa3e6be22"
+            sender = "terothemis1@gmail.com"
+            app_paswword = "your-app-password"  # replace with your app password
             html_message = MIMEText(body, 'html')
             html_message['Subject'] = subject
             html_message['From'] = sender
             html_message['To'] = email
-            with smtplib.SMTP("in-v3.mailjet.com", 587) as server:
-                server.starttls()
-                server.login(MAILJET_API_KEY, MAILJET_SECRET_KEY)
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+                server.login(sender, app_paswword)  # replace with your app password
                 server.sendmail(sender, email, html_message.as_string())
             print("Email sent")
 
@@ -79,7 +77,7 @@ def verify():
 
     if user_code == session.get("verify_code"):
         login(user_code)
-        return {"status": "ok"}
+        return {"status": "code", "ok": True}
 
     return {"status": "error"}
 

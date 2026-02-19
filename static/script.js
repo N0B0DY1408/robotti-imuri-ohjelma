@@ -2,6 +2,7 @@ const dialog = document.getElementById("loginDialog");
 const showButton = document.getElementById("login");
 const closeButton = document.getElementById("closeDialog");
 const signupForm = document.getElementById("signupForm");
+const codeForm = document.getElementById("codeForm");
 const worked = document.getElementById("onnistui");
 
 
@@ -13,10 +14,10 @@ closeButton.addEventListener("click", () => {
     dialog.close();
 });
 
-popupForm.addEventListener("submit", async (e) => {
+signupForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const email = popupForm.email.value;
+    const email = signupForm.email.value;
 
     try {
         const res = await fetch("/", {
@@ -27,18 +28,25 @@ popupForm.addEventListener("submit", async (e) => {
             body: JSON.stringify({ email }),
         });
 
-        const data = await res.json();
+        const text = await res.text();
+        console.log("Raw response:", text);
+        const data = JSON.parse(text);
         console.log(data); // debug
 
         if (data.success) {
-            popupForm.hidden = true;
-            worked.hidden = false;
+            signupForm.hidden = true;
+            codeForm.hidden = false;
         } else {
             alert(data.message || "Virhe");
         }
 
+        if (data.success && data.ok) {
+            codeForm.hidden = true;
+            onnistui.hidden = false;
+        }
+
     } catch (err) {
         console.error(err);
-        alert("Jokin meni pieleen");
+        alert("Tapahtui virhe");
     }
 });
