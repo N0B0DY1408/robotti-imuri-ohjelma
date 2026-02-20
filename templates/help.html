@@ -3,7 +3,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>testisivu</title>
-    <link rel="stylesheet" href="/static/tyyli.css"/>
+    <link rel="stylesheet" href="../static/tyyli.css"/>
 </head>
 
 <main>
@@ -18,8 +18,14 @@
         <a href="main.html">Etusivu</a>
     </nav>
 
-    <body>
-        <img src="../horse.jpg" alt="hevonen">
+    <body onload="stop_watch('{{ time_since }}')">
+        <!-- ajastin panee id timeriin ajan viime varauksesta, tarvitsee myös onload ^ -->
+        <div class="debugcircle">
+            <p id="timer"></p>
+            <script src="../static/time.js"></script>
+        </div>
+
+
     </body>
 
     <aside>
