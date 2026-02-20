@@ -1,4 +1,5 @@
 #muutuja_esimerkki
+import datetime
 import smtplib
 import ssl
 from dotenv import load_dotenv
@@ -113,11 +114,16 @@ def logout(): # jos menee /logout sivulle kirjaudut ulos
     manage_session.set_session()
     return redirect("/")
 
-@app.route("/lol", methods=["GET", "POST"])
-def code_login():
-    # debug sivu joka koittaa login tällä koodilla
-    login("80085")
-    return redirect ("/logincheck")
+@app.route("/help", methods=["GET", "POST"])
+def timer_thing():
+    time_since = connect.tira_cur.execute("SELECT start FROM History WHERE device_id = 1 AND end = 0").fetchone()
+    time_since = time_since[0] #todo format timestamp to date
+    time_since = datetime.datetime.fromtimestamp(int(time_since))
+    print(time_since)
+    return render_template(
+        "help.html",
+        time_since=time_since
+    )
 
 @app.route("/varaus", methods=["GET", "POST"])
 def reserve_page():
