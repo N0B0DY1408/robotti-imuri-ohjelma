@@ -117,7 +117,12 @@ def logout(): # jos menee /logout sivulle kirjaudut ulos
 @app.route("/help", methods=["GET", "POST"])
 def timer_thing():
     time_since = connect.tira_cur.execute("SELECT start FROM History WHERE device_id = 1 AND end = 0").fetchone()
-    time_since = time_since[0] #todo format timestamp to date
+    if time_since is None:
+        return render_template(
+            "help.html",
+            time_since="vapaa"
+        )
+    time_since = time_since[0]
     time_since = datetime.datetime.fromtimestamp(int(time_since))
     print(time_since)
     return render_template(
