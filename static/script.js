@@ -1,19 +1,14 @@
-const dialog = document.getElementById("loginDialog");
-const showButton = document.getElementById("login");
-const closeButton = document.getElementById("closeDialog");
 const signupForm = document.getElementById("signupForm");
 const codeForm = document.getElementById("codeForm");
-const worked = document.getElementById("onnistui");
+
+const emailView = document.getElementById("emailView");
+const codeView = document.getElementById("codeView");
+const successView = document.getElementById("successView");
+
+const modalTitle = document.getElementById("modalTitle");
 
 
-showButton.addEventListener("click", () => {
-    dialog.showModal();
-});
-
-closeButton.addEventListener("click", () => {
-    dialog.close();
-});
-
+// EMAIL SUBMIT
 signupForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -28,25 +23,50 @@ signupForm.addEventListener("submit", async (e) => {
             body: JSON.stringify({ email }),
         });
 
-        const text = await res.text();
-        console.log("Raw response:", text);
-        const data = JSON.parse(text);
-        console.log(data); // debug
+        const data = await res.json();
 
         if (data.success) {
-            signupForm.hidden = true;
-            codeForm.hidden = false;
+            emailView.style.display = "none";
+            codeView.style.display = "block";
+            modalTitle.innerText = "Syötä vahvistuskoodi";
         } else {
             alert(data.message || "Virhe");
-        }
-
-        if (data.success && data.ok) {
-            codeForm.hidden = true;
-            onnistui.hidden = false;
         }
 
     } catch (err) {
         console.error(err);
         alert("Tapahtui virhe");
+    }
+});
+
+
+// CODE SUBMIT
+codeForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const code = codeForm.code.value;
+
+    try {
+        const res = await fetch("/verify", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ code }),
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            codeView.style.display = "none";
+            successView.style.display = "block";
+            modalTitle.innerText = "Valmis!";
+        } else {
+            alert("Väärä koodi");
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert("Virhe vahvistuksessa");
     }
 });

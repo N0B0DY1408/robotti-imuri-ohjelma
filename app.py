@@ -34,7 +34,7 @@ app.config["SESSION_TYPE"] = "filesystem" # Väliaikainen vaihta db jossain vaih
 
 Session(app) # tämä on mihin tarvittiin flask_session
 
-def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+def id_generator(size=4, chars=string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
     # id generator email koodeihin
 
@@ -95,12 +95,20 @@ def email_login():
 @app.route("/verify", methods=["POST"])
 def verify():
     user_code = request.json.get("code")
+    real_code = session.get("verify_code")
 
-    if user_code == session.get("verify_code"):
+    print("User code:", user_code)
+    print("Real code:", real_code)
+
+    if not real_code:
+        return jsonify({"success": False, "message": "Sessio vanhentunut"})
+
+    if user_code == real_code:
         login(user_code)
-        return {"status": "code", "ok": True}
+        session.pop("verify_code", None)  # poista käytetty koodi
+        return jsonify({"success": True})
 
-    return {"status": "error"}
+    return jsonify({"success": False, "message": "Väärä koodi"})
 
 
 @app.route("/logincheck", methods=["GET", "POST"])

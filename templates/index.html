@@ -4,6 +4,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Etusivu</title>
     <link rel="stylesheet" href="/static/tyyli.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 
 <main>
@@ -13,39 +16,51 @@
         <h1 id="teksti">Tällä sivulla pääset varaamaan robotteja käyttöösi</h1>
     </header>
 
-    <nav>
-        <!---navigointi mahdollisten sivujen välillä ja sign uppi ja kirjautuminen-->
-        <dialog id="loginDialog">
-            <button id="closeDialog" autofocus>Sulje</button>
+    <button class="btn btn-info btn-lg" data-toggle="modal" data-target="#authModal">
+    Kirjaudu / Rekisteröidy
+    </button>
 
-            <p>Kirjoita sähköpostisi</p>
+    <!-- Bootstrap modal -->
+    <div class="modal fade" id="authModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" id="modalTitle">Kirjoita sähköpostisi</h4>
+        </div>
 
+        <div class="modal-body">
+
+            <!-- 1️⃣ EMAIL VIEW -->
+            <div id="emailView">
             <form id="signupForm">
-                <!---tähän silleen että tarkistaa onko emaili syötetty ja jos on niin se skippaa emailin ja koodin ja kysyy vain nimeä--->
-                <input type="email" name="email" required>
-                <button type="submit" class="send">Lähetä</button>
+                <input type="email" name="email" required class="form-control">
+                <br>
+                <button type="submit" class="btn btn-primary">Lähetä</button>
             </form>
-
-            <form id="codeForm" hidden>
-                <input type="text" name="code" required>
-                <button type="submit" class="send">Lähetä</button>
-            </form>
-
-            <form id="nameForm" hidden>
-                <!---tähän sitte vaan se että se ottaa sen nimen annetusta sähköpostista jotta sen voi syöttää tähän--->
-                <input type="name" name="name" required>
-                <button type="submit" class="send">Lähetä</button>
-            </form>
-
-
-            <div id="onnistui" hidden>
-                <p>Koodi lähetetty sähköpostiisi!</p>
             </div>
 
-        </dialog>
+            <!-- 2️⃣ CODE VIEW -->
+            <div id="codeView" style="display:none;">
+            <p>Kirjoita sähköpostiisi lähetetty koodi</p>
+            <form id="codeForm">
+                <input type="text" name="code" required class="form-control">
+                <br>
+                <button type="submit" class="btn btn-success">Vahvista</button>
+            </form>
+            </div>
 
-        <button id="login">Kirjaudu/rekisteröidy</button>
+            <!-- 3️⃣ SUCCESS VIEW -->
+            <div id="successView" style="display:none;">
+            <h4>Koodi hyväksytty!</h4>
+            <p>Kirjautuminen onnistui.</p>
+            </div>
 
+        </div>
+        </div>
+    </div>
+    </div>
 
         <button href="help.html">Apua</button>
     </nav>
