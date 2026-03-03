@@ -20,11 +20,6 @@ eport = int(os.getenv("emailport"))
 euser = os.getenv("emailuser")
 epassword = os.getenv("emailpassword")
 
-print("HOST:", ehost)
-print("PORT:", eport)
-print("USER:", euser)
-print("PASS:", epassword)
-
 app = Flask(__name__,
 template_folder=connect.template_folder)
 
@@ -37,6 +32,8 @@ Session(app) # tämä on mihin tarvittiin flask_session
 def id_generator(size=4, chars=string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
     # id generator email koodeihin
+
+
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -96,12 +93,18 @@ def email_login():
 def verify():
     user_code = request.json.get("code")
     real_code = session.get("verify_code")
+    code_time = session.get("code_time")
+    session["verify_code"] = user_code
+    session["code_time"] = datetime.datetime.now().timestamp()
 
     print("User code:", user_code)
     print("Real code:", real_code)
 
     if not real_code:
         return jsonify({"success": False, "message": "Sessio vanhentunut"})
+    
+    if not code_time or datetime.datetime.now().timestamp() - code_time > 900:
+        return jsonify({"success": False, "message": "Koodi vanhentunut"})
 
     if user_code == real_code:
         login(user_code)
@@ -109,6 +112,8 @@ def verify():
         return jsonify({"success": True})
 
     return jsonify({"success": False, "message": "Väärä koodi"})
+
+    
 
 
 @app.route("/logincheck", methods=["GET", "POST"])
