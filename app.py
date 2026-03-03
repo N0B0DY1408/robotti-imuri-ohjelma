@@ -58,11 +58,20 @@ def email_login():
             session["email"] = email
             #Sähköposti Vahvistus
             subject = f"Koodisi on: [{code}]"
-            body = f"""<html>
+            body = f"""
+            <html>
             <body>
-                <p>"Koodisi on: [{code}]" </p>
+            <div style="width: 200px;">
+            <p>kpedu robotti varaus</p>
+            <p>automaattinen koodi kirjautua palveluun</p>
+            <p>koodisi on</p>
+            <div style="background-color: rgb(234, 234, 234); border-radius: 10px; width: 90px;">
+            <p style="text-align: center;">[{code}]</p>
+            </div>
+            </div>
             </body>
-            </html>"""
+            </html>
+            """
             sender = euser
             app_paswword = epassword
             html_message = MIMEText(body, 'html')
