@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/static/tyyli.css"/>
 </head>
 
+<body onload="stop_watch('{{ time_since }}')">
 <main>
 
     <header>
@@ -17,32 +18,23 @@
         <!---navigointi mahdollisten sivujen välillä ja sign uppi ja kirjautuminen-->
         <form method="post">
             <select name="robotit" id="robottidropdown" method="GET",required>
-                {% for robo in robots %}
-                <option value= "{{robo}}" SELECTED>{{robo}}</option>"
+                {% for room in room_display %}
+                <option value= "{{room}}" SELECTED>{{room}}</option>"
                 {% endfor %}
             </select>
-            <input type="date" name="the_date" id="varausdate",required>
-            <label for="varausdate">päivä</label>
-            <input type="time" name="the_time"id="varaustime",required>
-            <label for="varaustime">kellonaika</label>
-            <input type="number" name="length" id="varauspituus",required>
-            <label for="varauspituus">kuinka monta tuntia</label>
-            <input type="submit" id="varaa" value="varaa">
-        </form>
-
-        <button href="help.html">Apua</button>
+        <!-- ajastin panee id timeriin ajan viime varauksesta, tarvitsee myös onload ^ -->
+        <div class="debugcircle">
+            <p id="timer"></p>
+            <script src="../static/time.js"></script>
+        </div>
         <br>
-        //luuranko sivu jotta saadaan tämä kohta projektista alkuun
-        <br>
-        <div style="background-color: red;"><p>aikajana valitusta robotista</p></div>
     </nav>
 
     
         
 
-    <body>
         <!---robotin varaus kentät Sähköpostilla. tarkistaa että on kpedu sähköposti ja niin että kpedu on oikeassa kohtaa jotta tunnistaa opettajaksi--->
-    </body>
+</body>
 
     <script src="/static/script.js"></script>
 
