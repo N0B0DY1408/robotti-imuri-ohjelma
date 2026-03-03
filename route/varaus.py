@@ -44,7 +44,7 @@ def ticket_varaus(huone, laite = "testilaite"):
     connect.tira_cur.execute("INSERT INTO History VALUES(?,?,?,?,?,?)", history_entry)
     connect.tira_con.commit()
 
-def remove_ticket_varaus(huone, laite="testilaite"):
+def remove_ticket_varaus(laite="testilaite"):
     """ 
     poistaa tiketti varauksen
     1. devices availability = True
@@ -69,11 +69,11 @@ def remove_ticket_varaus(huone, laite="testilaite"):
     # tässä me päivitetään oikeat historia kohdat nykyaikaan
     right_now = datetime.now(timezone.utc).replace(microsecond=0)
     right_now = right_now.timestamp()
-    history_update = [right_now, device_id, huone]
-    connect.tira_cur.execute("UPDATE History SET end = ? WHERE device_id = ? AND room = ? AND end = 0", history_update)
+    history_update = [right_now, device_id]
+    connect.tira_cur.execute("UPDATE History SET end = ? WHERE device_id = ? AND end = 0", history_update)
     connect.tira_con.commit()
 
 
-if __name__ == "__main__":
-    #ticket_varaus(219)
-    #remove_ticket_varaus(219)
+#if __name__ == "__main__":
+    #ticket_varaus(220)
+    #remove_ticket_varaus()
