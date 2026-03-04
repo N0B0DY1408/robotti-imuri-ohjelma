@@ -9,11 +9,11 @@ template_folder = path.join(main_folder, "templates") # templates kansio
 tira_con = sqlite3.connect(tira_db, check_same_thread=False) # yhteys tietokantaan
 tira_cur = tira_con.cursor()
 
-def r_sqlite_of(input):
+def r_sqlite_of(sqlite_input):
     # ridiculous sqlite output formatter
     # kun sqlite antaa listan joissa on tupleita joissa on yks juttu
     new_list=[]
-    for item in input:
+    for item in sqlite_input:
         new_list.append(item[0])
     return new_list
 
