@@ -180,6 +180,25 @@ def login(code): # tekee tilin jos tili ei ole olemassa sitten antaa keksin
             connect.tira_con.commit()
         manage_session.set_session(email) # sun sessio on nyt sun email
 
+def favroom_selector(room_number):
+    # tämä skripti käytetään jotta voi asettaa jonkun hunoeen käyttäjän oletushuoneeksi
+    # pane room_number kohtaan huoneen numero esim 218
+    # palauttaa False jos ei toiminut, palauttaa True jos toimi
+    try:
+        email = manage_session.isloggedin()
+        if email is None:
+            print("ei kirjautunut sisään")
+            return False
+    except RuntimeError:
+        print("ei yhteys serveriin")
+        return False
+    # ^ ottaa käyttäjän emailin sessiosta
+    favroom_update = [room_number, email]
+    connect.tira_cur.execute("UPDATE Users SET favroom = ? WHERE email = ?", favroom_update)
+    connect.tira_con.commit()
+    # ^ asettaa käyttäjän lempihuoneen sqlitessä
+    return True
+
 if __name__ == "__main__":
     app.run(debug=True)
 
