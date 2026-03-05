@@ -33,3 +33,19 @@ def user_info(item=None): # kuinka mones juttu haluat
     if item is not None:
         info = info[item]
     return info
+
+def all_users_info(item="email"): # minkä jutun haluat
+    # helppo functio joka ottaa infoa joka käyttäjästä
+    if item == "email":
+        info = connect.tira_cur.execute("SELECT email FROM Users").fetchall()
+    elif item == "name":
+        info = connect.tira_cur.execute("SELECT name FROM Users").fetchall()
+    elif item == "class":
+        info = connect.tira_cur.execute("SELECT class FROM Users").fetchall()
+    else:
+        return False
+    new_info = connect.r_sqlite_of(info)
+    return new_info
+
+#if __name__ == "__main__":
+    #print(all_users_info())
