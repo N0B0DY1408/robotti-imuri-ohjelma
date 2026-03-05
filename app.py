@@ -3,6 +3,7 @@ import datetime
 import smtplib
 import ssl
 from dotenv import load_dotenv
+import re
 import os
 from email.mime.text import MIMEText
 import random
@@ -124,7 +125,7 @@ def verify():
 @app.route("/logincheck", methods=["GET", "POST"])
 def logincheck():
     # debug sivu ennen kun missään muualla on tätä infoo
-    baba = manage_session.isloggedin()
+    baba = manage_session.user_info()
     return f"<p>{baba}</p>"
 
 @app.route("/logout", methods=["GET", "POST"])
@@ -169,11 +170,16 @@ def login(code): # tekee tilin jos tili ei ole olemassa sitten antaa keksin
     if email:
         email_as_list = [email]
         accountcheck = connect.tira_cur.execute("SELECT email FROM Users WHERE email= ?", email_as_list)
-        # ^ jos tällä scriptillä on joku omituinen virhe tämä on varmaan syy
+        # ^ tarkistaa jos käyttäjä on olemassa
         if accountcheck.fetchone() is None:
-            connect.tira_cur.execute("INSERT INTO Users(email) VALUES (?)", email_as_list)
-            # jostain syystä ottaa tuplen sen sijaan kun stringin
+            etunimi, sukunimi = re.split("\\.", email, 1)
+            nimi = etunimi + " " + sukunimi[0]
+            # ^ käytetään vähän regex ottamaan etunimi ja ensimmäinen kirjain sukunimestä
+            # eg "Yaoi.Yuri@gay.com" -> "Yaoi", "Y"
+            users_input = [email, nimi]
+            connect.tira_cur.execute("INSERT INTO Users(email, name) VALUES (?,?)", users_input)
             connect.tira_con.commit()
+            # ^ syötetään email ja nimi sqliteen
         manage_session.set_session(email) # sun sessio on nyt sun email
 
 def favroom_selector(room_number):
