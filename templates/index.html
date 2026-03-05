@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.5.2/dist/css/tom-select.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.5.2/dist/js/tom-select.complete.min.js"></script>
 </head>
 
 <main>
@@ -35,12 +37,19 @@
             <!-- 1️⃣ EMAIL VIEW -->
             <div id="emailView">
             <form id="signupForm">
-                <input type="email" name="email" required class="form-control">
+                <select id="select-email" placeholder="matti.meikalainen@kpedu.fi" autocomplete="off">
+                      <select name="robotit" id="robottidropdown" method="GET",required>
+                {% for room in room_display %}
+                <option value= "{{room}}" SELECTED>{{room}}</option>"
+                {% endfor %}
+            </select>
+		        </select>
+                <br>
+                <input class="form-check-input" type="checkbox" id="check1" name="option1" value="something" required>
+                <label class="form-check-label">Hyväksyn että työpaikka vakoilee miten siivoan huonettani</label>
                 <br>
                 <button type="submit" class="btn btn-primary">Lähetä</button>
             </form>
-            <input class="form-check-input" type="checkbox" id="check1" name="option1" value="something" checked>
-            <label class="form-check-label" required>Hyväksyn että työpaikka vakoilee miten siivoan huonettani</label>
             </div>
 
             <!-- 2️⃣ CODE VIEW -->
@@ -66,7 +75,42 @@
 
         <button href="help.html" class="btn btn-info btn-lg">Apua</button>
     </nav>
+      <div class="container d-flex justify-content-center align-items-center full-height">
+    
+    <div class="circle-wrapper">
+        <div class="outer-dashed"></div>
 
+        <div class="circle-card">
+            <h4 class="text-success">Ehdottu</h4>
+            <select class="border p-2 px-5"name="robotit" id="robottidropdown" method="GET",required>
+                {% for room in room_display %}
+                <option value= "{{room}}" SELECTED>{{room}}</option>"
+                {% endfor %}
+            </select>
+         
+                       
+            </select>
+    
+
+
+            <h5 class="mt-3">Historia</h5>
+
+            <div class="d-flex gap-5 align-items-center mt-2">
+                <span class="border px-3 py-1 ">A125</span>
+                  <span class="text-danger">Erkki.E</span>
+            </div>
+
+               <p id="timer"></p>
+            <script src="../static/time.js"></script>
+
+               <button onclick="" class="btn btn-varaus mt-3">
+                Varaa
+            </button>
+            
+        </div>
+    </div>
+
+</div>
     
         
 

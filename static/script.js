@@ -1,5 +1,6 @@
 const signupForm = document.getElementById("signupForm");
 const codeForm = document.getElementById("codeForm");
+const checkbox = document.getElementById("check1");
 
 const emailView = document.getElementById("emailView");
 const codeView = document.getElementById("codeView");
@@ -13,6 +14,12 @@ signupForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const email = signupForm.email.value;
+     const isChecked = checkbox.checked;
+
+    if (!isChecked) {
+        alert("Sinun täytyy hyväksyä ehdot ennen jatkamista.");
+        return; // Estää fetchin
+    }
 
     try {
         const res = await fetch("/", {
@@ -70,3 +77,29 @@ codeForm.addEventListener("submit", async (e) => {
         alert("Virhe vahvistuksessa");
     }
 });
+
+new TomSelect("#select-email", {
+    create: true,
+    no_results:false,
+    sortField: {
+        field: "text",
+        direction: "asc"
+        
+        
+    },
+    render: {
+    option_create: function(data, escape) {
+        return '<div class="create">lisää käyttäjä "<strong>' + 
+            escape(data.input) + 
+            '</strong>"</div>';
+    },
+    no_results: function(data, escape) {
+        return '<div class="create">ei tuloksia "<strong>' + 
+            escape(data.input) + 
+            '</strong>"</div>';
+    }
+}
+    
+});
+
+   

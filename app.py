@@ -1,5 +1,7 @@
 #muutuja_esimerkki
+import code
 import datetime
+import email
 import smtplib
 import ssl
 from dotenv import load_dotenv
@@ -12,7 +14,6 @@ from flask_session import Session
 from route import connect, manage_session, login_logic
 
 context = ssl.create_default_context()
-
 load_dotenv("salaisetjutut/email.env")
 
 ehost = os.getenv("emailhost")
@@ -54,8 +55,7 @@ def email_login():
             return jsonify({"success": False, "message": "Syötä kpedu-sähköposti"})
         else:
             code = id_generator()
-            session["verify_code"] = code
-            session["email"] = email
+            login_logic.add_code(email, code)
             #Sähköposti Vahvistus
             subject = f"Koodisi on: [{code}]"
             body = f"""
@@ -101,23 +101,17 @@ def email_login():
 @app.route("/verify", methods=["POST"])
 def verify():
     user_code = request.json.get("code")
-    real_code = session.get("verify_code")
-    code_time = session.get("code_time")
-    session["code_time"] = datetime.datetime.now().timestamp()
 
     if not user_code:
-        return jsonify({"success": False, "message": "Sessio vanhentunut"})
-    
-    if not code_time or datetime.datetime.now().timestamp() - code_time > 900:
-        return jsonify({"success": False, "message": "Koodi vanhentunut"})
+        return jsonify({"success": False, "message": "Koodi puuttuu"})
 
-    if user_code == real_code:
-        login(user_code)
-        session.pop("verify_code", None)  # poista käytetty koodi
-        return jsonify({"success": True})
+    email = login_logic.use_code(user_code)
 
-    return jsonify({"success": False, "message": "Väärä koodi"})
+    if not email:
+        return jsonify({"success": False, "message": "Väärä tai vanhentunut koodi"})
 
+    login(email)
+    return jsonify({"success": True})
     
 
 
@@ -164,17 +158,22 @@ def reserve_page():
         "varaus.html", room_display=room_display, time_since=time_since
     ) # pannaan tarvittu info sivulle ja ladataan se
 
-def login(code): # tekee tilin jos tili ei ole olemassa sitten antaa keksin
-    email = login_logic.use_code(code)
-    if email:
-        email_as_list = [email]
-        accountcheck = connect.tira_cur.execute("SELECT email FROM Users WHERE email= ?", email_as_list)
-        # ^ jos tällä scriptillä on joku omituinen virhe tämä on varmaan syy
-        if accountcheck.fetchone() is None:
-            connect.tira_cur.execute("INSERT INTO Users(email) VALUES (?)", email_as_list)
-            # jostain syystä ottaa tuplen sen sijaan kun stringin
-            connect.tira_con.commit()
-        manage_session.set_session(email) # sun sessio on nyt sun email
+def login(email): #tämä kohta nyt tarkistaa tietokannan onko email jo siellä ja jos ei niin lisää sen
+    email_as_list = [email]
+
+    accountcheck = connect.tira_cur.execute(
+        "SELECT email FROM Users WHERE email = ?", 
+        email_as_list
+    )
+
+    if accountcheck.fetchone() is None:
+        connect.tira_cur.execute(
+            "INSERT INTO Users(email) VALUES (?)", 
+            email_as_list
+        )
+        connect.tira_con.commit()
+
+    manage_session.set_session(email)
 
 def favroom_selector(room_number):
     # tämä skripti käytetään jotta voi asettaa jonkun hunoeen käyttäjän oletushuoneeksi
