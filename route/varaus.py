@@ -6,7 +6,7 @@ except ImportError:
     from route import connect
     from route import manage_session
 
-def ticket_varaus(laite):
+def ticket_varaus(huone, laite = "testilaite"):
     """
     varaa nykyhetkestä siihen että itse lopetat
     1. devices availability = False
@@ -40,17 +40,26 @@ def ticket_varaus(laite):
     right_now = datetime.now(timezone.utc).replace(microsecond=0)
     right_now_timestamp = right_now.timestamp()
 
-    history_entry = [user_id,device_id,right_now_timestamp,0, "varaus"]
-    connect.tira_cur.execute("INSERT INTO History VALUES(?,?,?,?,?)", history_entry)
+    history_entry = [user_id,device_id,right_now_timestamp,0, "varaus", huone]
+    connect.tira_cur.execute("INSERT INTO History VALUES(?,?,?,?,?,?)", history_entry)
     connect.tira_con.commit()
 
-def remove_ticket_varaus(laite):
+def remove_ticket_varaus(laite="testilaite"):
     """ 
     poistaa tiketti varauksen
     1. devices availability = True
     2. Historia entry jossa loppu on 0 ja device id on oikea
         end = nykyaika
     """
+    try:
+        email = manage_session.isloggedin()
+        if email is None:
+            print("ei kirjautunut sisään")
+            return False
+    except RuntimeError:
+        print("ei yhteys serveriin")
+        return False
+        #email = "goldenbaba"
     # tässä me asetetaan devices availability = 1 ja otetaan myös id
     device_as_list = [laite]
     connect.tira_cur.execute("UPDATE Devices SET availability = 1 WHERE device = ?", device_as_list)
@@ -65,6 +74,6 @@ def remove_ticket_varaus(laite):
     connect.tira_con.commit()
 
 
-if __name__ == "__main__":
-    ticket_varaus("testilaite")
-    #remove_ticket_varaus("testilaite")
+#if __name__ == "__main__":
+    #ticket_varaus(220)
+    #remove_ticket_varaus()

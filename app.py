@@ -132,46 +132,37 @@ def logout(): # jos menee /logout sivulle kirjaudut ulos
     manage_session.set_session()
     return redirect("/")
 
-@app.route("/help", methods=["GET", "POST"])
-def timer_thing():
-    time_since = connect.tira_cur.execute("SELECT start FROM History WHERE device_id = 1 AND end = 0").fetchone()
-    if time_since is None:
-        return render_template(
-            "help.html",
-            time_since="vapaa"
-        )
-    time_since = time_since[0]
-    time_since = datetime.datetime.fromtimestamp(int(time_since))
-    print(time_since)
-    return render_template(
-        "help.html",
-        time_since=time_since
-    )
-
 @app.route("/varaus", methods=["GET", "POST"])
 def reserve_page():
-    # sivu vuoron varaukseen
+    time_since = connect.tira_cur.execute("SELECT start FROM History WHERE device_id = 1 AND end = 0").fetchone()
+    if time_since is None:
+        time_since = "vapaa"
+    else:
+        time_since = time_since[0]
+        time_since = datetime.datetime.fromtimestamp(int(time_since))
+    # yllä me otetaan tietokannasta viime varauksen alun
 
-    #user = manage_session.isloggedin()
-    #if not user: # jos et ole kirjautunut et voi olla sivulla
-    #    return redirect("/")
-    # ^tarkistaa jos on kirjautunut
-    # kommentoitu testauksen takia
-    robots1 = connect.tira_cur.execute("SELECT device FROM devices").fetchall()
-    # robots2 on vaan kunnolla formatoitu
-    robots2 = connect.r_sqlite_of(robots1)
+    room_numbers = connect.tira_cur.execute("SELECT number FROM Rooms").fetchall()
+    room_names = connect.tira_cur.execute("SELECT name FROM Rooms").fetchall()
+    rooms_numbers = connect.r_sqlite_of(room_numbers)
+    room_names = connect.r_sqlite_of(room_names)
+    # yllä me otetaan huone infoa sqlitestä ja vähän formatoidaan
+
+    room_display = []
+    for num, nam in zip(room_numbers, room_names):
+        if nam is None:
+            room_display.append(num[0])
+        else:
+            room_display.append(str(num[0]) + " " + nam)
+    # lisää huone info formatointia
 
     if request.method == "POST":
-        robotit = request.form.get("robotit")
-        the_date = request.form.get("the_date")
-        the_time = request.form.get("the_time")
-        length = request.form.get("length")
-        print(robotit,the_date,the_time,length)
-        # pitää tehdä tarkistuksia ja sitten tallentaa sqlite historiaan
-        # aiotaan näyttää sqlitest tärkee historia sivulla
+        #jotain = request.form.get("jotain")
+        pass
+        # jotta voi saada infoo sivulta
     return render_template(
-        "varaus.html", robots=robots2
-    )
+        "varaus.html", room_display=room_display, time_since=time_since
+    ) # pannaan tarvittu info sivulle ja ladataan se
 
 def login(code): # tekee tilin jos tili ei ole olemassa sitten antaa keksin
     email = login_logic.use_code(code)
@@ -184,6 +175,25 @@ def login(code): # tekee tilin jos tili ei ole olemassa sitten antaa keksin
             # jostain syystä ottaa tuplen sen sijaan kun stringin
             connect.tira_con.commit()
         manage_session.set_session(email) # sun sessio on nyt sun email
+
+def favroom_selector(room_number):
+    # tämä skripti käytetään jotta voi asettaa jonkun hunoeen käyttäjän oletushuoneeksi
+    # pane room_number kohtaan huoneen numero esim 218
+    # palauttaa False jos ei toiminut, palauttaa True jos toimi
+    try:
+        email = manage_session.isloggedin()
+        if email is None:
+            print("ei kirjautunut sisään")
+            return False
+    except RuntimeError:
+        print("ei yhteys serveriin")
+        return False
+    # ^ ottaa käyttäjän emailin sessiosta
+    favroom_update = [room_number, email]
+    connect.tira_cur.execute("UPDATE Users SET favroom = ? WHERE email = ?", favroom_update)
+    connect.tira_con.commit()
+    # ^ asettaa käyttäjän lempihuoneen sqlitessä
+    return True
 
 if __name__ == "__main__":
     app.run(debug=True)
