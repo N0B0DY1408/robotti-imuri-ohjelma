@@ -5,6 +5,7 @@ import email
 import smtplib
 import ssl
 from dotenv import load_dotenv
+import re
 import os
 from email.mime.text import MIMEText
 import random
@@ -118,7 +119,7 @@ def verify():
 @app.route("/logincheck", methods=["GET", "POST"])
 def logincheck():
     # debug sivu ennen kun missään muualla on tätä infoo
-    baba = manage_session.isloggedin()
+    baba = manage_session.user_info()
     return f"<p>{baba}</p>"
 
 @app.route("/logout", methods=["GET", "POST"])
