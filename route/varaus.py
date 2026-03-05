@@ -73,7 +73,24 @@ def remove_ticket_varaus(laite="testilaite"):
     connect.tira_cur.execute("UPDATE History SET end = ? WHERE device_id = ? AND end = 0", history_update)
     connect.tira_con.commit()
 
+def varaus_info(item=None): # kuinka mones juttu haluat
+    # ottaa viime varauksesta infoa
+    info = connect.tira_cur.execute("SELECT * FROM History WHERE end = 0").fetchone()
+    if info is None:
+        return False
+    if item is not None:
+        info = info[item]
+    return info
+    # palauttaa infon listana järjestyksessä missä on sqlitessä (esim user id eka)
+    # tee esim varaus_info(5) jos haluat huoneen
+
+def varaus_name():
+    user_id = [varaus_info(0)]
+    username = connect.tira_cur.execute("SELECT name FROM Users WHERE user_id= ?", user_id).fetchone()
+    return(username[0])
 
 #if __name__ == "__main__":
     #ticket_varaus(220)
     #remove_ticket_varaus()
+    #print(varaus_info())
+    #print(varaus_name())
