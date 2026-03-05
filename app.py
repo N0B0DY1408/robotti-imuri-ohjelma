@@ -103,13 +103,9 @@ def verify():
     user_code = request.json.get("code")
     real_code = session.get("verify_code")
     code_time = session.get("code_time")
-    session["verify_code"] = user_code
     session["code_time"] = datetime.datetime.now().timestamp()
 
-    print("User code:", user_code)
-    print("Real code:", real_code)
-
-    if not real_code:
+    if not user_code:
         return jsonify({"success": False, "message": "Sessio vanhentunut"})
     
     if not code_time or datetime.datetime.now().timestamp() - code_time > 900:
