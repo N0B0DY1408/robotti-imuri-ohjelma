@@ -34,6 +34,9 @@ def user_info(item=None): # kuinka mones juttu haluat
         info = info[item]
     return info
 
+
+
+
 def all_users_info(item="email"): # minkä jutun haluat
     # helppo functio joka ottaa infoa joka käyttäjästä
     if item == "email":

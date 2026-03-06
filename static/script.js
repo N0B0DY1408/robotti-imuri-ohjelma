@@ -90,12 +90,12 @@ new TomSelect("#select-email", {
     render: {
     option_create: function(data, escape) {
         return '<div class="create">lisää käyttäjä "<strong>' + 
-            escape(data.input) + 
+            escape(data.input+"@kpedu.fi") + 
             '</strong>"</div>';
     },
     no_results: function(data, escape) {
         return '<div class="create">ei tuloksia "<strong>' + 
-            escape(data.input) + 
+            escape(data.input+"@kpedu.fi") + 
             '</strong>"</div>';
     }
 }

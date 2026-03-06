@@ -40,63 +40,69 @@ def id_generator(size=4, chars=string.digits):
 
 @app.route("/", methods=["GET", "POST"])
 def email_login():
-    
-    email = None
 
     if request.method == "POST":
-        email = request.json.get("email")
 
-        # email muuttuja on minne sähköposti lähetetään
-        # pitää saada html inputista sähköposti
-        print("POST tuli perille")
-        print(email)
-        status = "sent"
+        email = request.json.get("email")
 
         if not email or "@student.kpedu.fi" not in email:
             return jsonify({"success": False, "message": "Syötä kpedu-sähköposti"})
-        else:
-            code = id_generator()
-            login_logic.add_code(email, code)
-            #Sähköposti Vahvistus
-            subject = f"Koodisi on: [{code}]"
-            body = f"""
-            <html>
-            <body>
-            <div style="width: 200px;">
-            <p>kpedu robotti varaus</p>
-            <p>automaattinen koodi kirjautua palveluun</p>
-            <p>koodisi on</p>
-            <div style="background-color: rgb(234, 234, 234); border-radius: 10px; width: 90px;">
-            <p style="text-align: center;">[{code}]</p>
-            </div>
-            </div>
-            </body>
-            </html>
-            """
-            sender = euser
-            app_paswword = epassword
-            html_message = MIMEText(body, 'html')
-            html_message['Subject'] = subject
-            html_message['From'] = sender
-            html_message['To'] = email
-            try:
-                with smtplib.SMTP(ehost, eport) as server:
-                    server.starttls(context=context)
-                    server.login(euser, epassword)
-                    server.sendmail(sender, email, html_message.as_string())
-                print("Email sent")
-            except Exception as e:
-                import traceback
-                traceback.print_exc()
-                return jsonify({"success": False, "message": "Sähköpostin lähetys epäonnistui"})
 
-        return jsonify({"status": "sent", "success": True})
-        
+        email_as_list = [email]
 
+        code = id_generator()
+        login_logic.add_code(email, code)
+
+        # lisää käyttäjä jos ei ole
+        accountcheck = connect.tira_cur.execute(
+            "SELECT email FROM Users WHERE email = ?", 
+            email_as_list
+        )
+
+        if accountcheck.fetchone() is None:
+            connect.tira_cur.execute(
+                "INSERT INTO Users(email) VALUES (?)", 
+                email_as_list
+            )
+            connect.tira_con.commit()
+
+        # email lähetys
+        subject = f"Koodisi on: [{code}]"
+        body = f"""
+        <html>
+        <body>
+        <p>Koodisi on:</p>
+        <b>[{code}]</b>
+        </body>
+        </html>
+        """
+
+        html_message = MIMEText(body, 'html')
+        html_message['Subject'] = subject
+        html_message['From'] = euser
+        html_message['To'] = email
+
+        try:
+            with smtplib.SMTP(ehost, eport) as server:
+                server.starttls(context=context)
+                server.login(euser, epassword)
+                server.sendmail(euser, email, html_message.as_string())
+        except:
+            return jsonify({"success": False})
+
+        return jsonify({"success": True})
+
+    # -------- GET --------
+
+    users = connect.tira_cur.execute(
+        "SELECT email FROM Users"
+    ).fetchall()
+
+    users = connect.r_sqlite_of(users)
 
     return render_template(
         "index.html",
-        email=email
+        users=users,
     )
 
 @app.route("/verify", methods=["POST"])
@@ -161,18 +167,6 @@ def reserve_page():
 
 def login(email): #tämä kohta nyt tarkistaa tietokannan onko email jo siellä ja jos ei niin lisää sen
     email_as_list = [email]
-
-    accountcheck = connect.tira_cur.execute(
-        "SELECT email FROM Users WHERE email = ?", 
-        email_as_list
-    )
-
-    if accountcheck.fetchone() is None:
-        connect.tira_cur.execute(
-            "INSERT INTO Users(email) VALUES (?)", 
-            email_as_list
-        )
-        connect.tira_con.commit()
 
     manage_session.set_session(email)
 

@@ -37,13 +37,11 @@
             <!-- 1️⃣ EMAIL VIEW -->
             <div id="emailView">
             <form id="signupForm">
-                <select id="select-email" placeholder="matti.meikalainen@kpedu.fi" autocomplete="off">
-                      <select name="robotit" id="robottidropdown" method="GET",required>
-                {% for room in room_display %}
-                <option value= "{{room}}" SELECTED>{{room}}</option>"
-                {% endfor %}
-            </select>
-		        </select>
+                <select id="select-email" name="email" placeholder="matti.meikalainen@student.kpedu.fi">
+                    {% for user in users %}
+                    <option value="{{user}}">{{user}}</option>
+                    {% endfor %}
+                </select>
                 <br>
                 <input class="form-check-input" type="checkbox" id="check1" name="option1" value="something" required>
                 <label class="form-check-label">Hyväksyn että työpaikka vakoilee miten siivoan huonettani</label>
