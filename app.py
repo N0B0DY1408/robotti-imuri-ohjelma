@@ -12,7 +12,7 @@ import random
 import string
 from flask import Flask, render_template, request, redirect, session, jsonify
 from flask_session import Session
-from route import connect, manage_session, login_logic
+from route import connect, manage_session, login_logic, varaus
 
 context = ssl.create_default_context()
 load_dotenv("salaisetjutut/email.env")
@@ -40,6 +40,10 @@ def id_generator(size=4, chars=string.digits):
 
 @app.route("/", methods=["GET", "POST"])
 def email_login():
+    room_display, time_since = reserve_page_info()
+    varaus_name = varaus.varaus_name()
+    varaus_room = varaus.varaus_info(5)
+    # otetaan huone valikko ja aika viime varauksesta
 
     if request.method == "POST":
 
@@ -103,6 +107,10 @@ def email_login():
     return render_template(
         "index.html",
         users=users,
+        room_display=room_display,
+        time_since=time_since,
+        varaus_name=varaus_name,
+        varaus_room=varaus_room
     )
 
 @app.route("/verify", methods=["POST"])
@@ -133,8 +141,8 @@ def logout(): # jos menee /logout sivulle kirjaudut ulos
     manage_session.set_session()
     return redirect("/")
 
-@app.route("/varaus", methods=["GET", "POST"])
-def reserve_page():
+def reserve_page_info():
+    # ottaa vähän infoa pääsivun varausnappiin
     time_since = connect.tira_cur.execute("SELECT start FROM History WHERE device_id = 1 AND end = 0").fetchone()
     if time_since is None:
         time_since = "vapaa"
@@ -148,22 +156,14 @@ def reserve_page():
     rooms_numbers = connect.r_sqlite_of(room_numbers)
     room_names = connect.r_sqlite_of(room_names)
     # yllä me otetaan huone infoa sqlitestä ja vähän formatoidaan
-
     room_display = []
-    for num, nam in zip(room_numbers, room_names):
+    for num, nam in zip(rooms_numbers, room_names):
         if nam is None:
-            room_display.append(num[0])
+            room_display.append(num)
         else:
-            room_display.append(str(num[0]) + " " + nam)
-    # lisää huone info formatointia
+            room_display.append(str(num) + " " + nam)
 
-    if request.method == "POST":
-        #jotain = request.form.get("jotain")
-        pass
-        # jotta voi saada infoo sivulta
-    return render_template(
-        "varaus.html", room_display=room_display, time_since=time_since
-    ) # pannaan tarvittu info sivulle ja ladataan se
+    return room_display, time_since
 
 def login(email): #tämä kohta nyt tarkistaa tietokannan onko email jo siellä ja jos ei niin lisää sen
     email_as_list = [email]
