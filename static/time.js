@@ -22,15 +22,15 @@ function stop_watch(time_since) {
         var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        if (hours == 0) {
-            timer.innerHTML = minutes + "m " + seconds + "s ";
-        } else if (days == 0) {
-            timer.innerHTML = hours + "h "
-            + minutes + "m " + seconds + "s ";
+        if (days != 0) {
+            timer.innerHTML = days + " päivää";
+        } else if (hours != 0) {
+            timer.innerHTML = hours + " tuntia";
+        } else if (minutes != 0) {
+            timer.innerHTML = minutes + " minuuttia";
         } else {
-            timer.innerHTML = days + "d " + hours + "h "
-            + minutes + "m " + seconds + "s ";
+            timer.innerHTML = seconds + " sekunttia";
         }
-        });
+        },200);
     }
 }
