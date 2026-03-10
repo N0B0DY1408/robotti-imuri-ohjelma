@@ -170,6 +170,26 @@ def login(email): #tämä kohta nyt tarkistaa tietokannan onko email jo siellä 
 
     manage_session.set_session(email)
 
+def add_room(room_number, room_name=None):
+    # funktio joka tekee huoneen jos se ei ole olemassa
+    existing_room = connect.tira_cur.execute("SELECT number FROM Rooms WHERE number = ?", [room_number]).fetchone()
+    if existing_room is not None:
+        return False
+    # jos huone jota pannaan on olemassa palauttaa False
+    if room_name is None:
+        connect.tira_cur.execute(
+        "INSERT INTO Rooms(number) VALUES (?)", 
+        [room_number]
+        )
+    else:
+        connect.tira_cur.execute(
+        "INSERT INTO Rooms VALUES (?,?)",
+        [room_number, room_name]
+        )
+    # tallentaa huone numeron, jos annoit nimen se tallennetaan myös
+    connect.tira_con.commit()
+    return True
+
 def favroom_selector(room_number):
     # tämä skripti käytetään jotta voi asettaa jonkun hunoeen käyttäjän oletushuoneeksi
     # pane room_number kohtaan huoneen numero esim 218
