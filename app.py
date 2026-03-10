@@ -43,6 +43,7 @@ def email_login():
     room_display, time_since = reserve_page_info()
     varaus_name = varaus.varaus_name()
     varaus_room = varaus.varaus_info(5)
+    history = varaus.varaus_history_info()
     # otetaan huone valikko ja aika viime varauksesta
 
     if request.method == "POST":
@@ -110,7 +111,8 @@ def email_login():
         room_display=room_display,
         time_since=time_since,
         varaus_name=varaus_name,
-        varaus_room=varaus_room
+        varaus_room=varaus_room,
+        history = history
     )
 
 @app.route("/verify", methods=["POST"])
