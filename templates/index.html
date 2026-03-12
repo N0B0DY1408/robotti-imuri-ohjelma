@@ -26,11 +26,27 @@
 </header>
 
 <nav>
-    <button class="btn btn-info btn-lg" data-toggle="modal" data-target="#authModal">
-        Kirjaudu / Rekisteröidy
-    </button>
 
-    <a href="help.html" class="btn btn-info btn-lg">Apua</a>
+{% if user %}
+    
+    <h2 class="welcome-text">
+    Tervetuloa {{ user.split("@")[0] }}
+    </h2>
+
+    <a href="/logout" class="btn btn-danger btn-lg">
+    Kirjaudu ulos
+    </a>
+
+{% else %}
+
+<button class="btn btn-info btn-lg" data-toggle="modal" data-target="#authModal">
+Kirjaudu / Rekisteröidy
+</button>
+
+{% endif %}
+
+<a href="help.html" class="btn btn-info btn-lg">Apua</a>
+
 </nav>
 
 <!-- LOGIN MODAL -->

@@ -24,7 +24,7 @@ signupForm.addEventListener("submit", async (e) => {
     }
 
     try {
-        const res = await fetch("/send_code", {
+        const res = await fetch("/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -67,9 +67,8 @@ codeForm.addEventListener("submit", async (e) => {
         const data = await res.json();
 
         if (data.success) {
-            codeView.style.display = "none";
-            successView.style.display = "block";
-            modalTitle.innerText = "Valmis!";
+        $('#authModal').modal('hide');
+        location.reload();
         } else {
             alert("Väärä koodi");
         }

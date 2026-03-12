@@ -111,6 +111,8 @@ def email_login():
 
     users = connect.r_sqlite_of(users)
 
+    user = manage_session.isloggedin()
+
     return render_template(
         "index.html",
         users=users,
@@ -118,7 +120,8 @@ def email_login():
         time_since=time_since,
         varaus_name=varaus_name,
         varaus_room=varaus_room,
-        history = history
+        history=history,
+        user=user
     )
 
 @app.route("/send_code", methods=["POST"])
@@ -135,9 +138,7 @@ def send_code():
     if not number:
         return jsonify({"success": False, "message": "Huone puuttuu"})
 
-    if not email:
-        return jsonify({"success": False, "message": "Email puuttuu"})
-
+    
     email_as_list = [email]
 
     accountcheck = connect.tira_cur.execute(
@@ -154,6 +155,7 @@ def send_code():
 
     # lisää huone jos ei ole
     add_room(number)
+    
 
     # lähetä koodi
     code = id_generator()
