@@ -9,12 +9,14 @@ const successView = document.getElementById("successView");
 const modalTitle = document.getElementById("modalTitle");
 
 
+
 // EMAIL SUBMIT
 signupForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const email = signupForm.email.value;
-     const isChecked = checkbox.checked;
+    const email = document.getElementById("select-email").value;
+    const number = document.getElementById("roomSelect").value;
+    const isChecked = checkbox.checked;
 
     if (!isChecked) {
         alert("Sinun täytyy hyväksyä ehdot ennen jatkamista.");
@@ -22,12 +24,12 @@ signupForm.addEventListener("submit", async (e) => {
     }
 
     try {
-        const res = await fetch("/", {
+        const res = await fetch("/send_code", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ email }),
+            body: JSON.stringify({ email: email, number: number }),
         });
 
         const data = await res.json();
@@ -96,6 +98,30 @@ new TomSelect("#select-email", {
     no_results: function(data, escape) {
         return '<div class="create">ei tuloksia "<strong>' + 
             escape(data.input+"@kpedu.fi") + 
+            '</strong>"</div>';
+    }
+}
+
+});
+
+new TomSelect("#roomSelect", {
+    create: true,
+    no_results:false,
+    sortField: {
+        field: "text",
+        direction: "asc"
+        
+        
+    },
+    render: {
+    option_create: function(data, escape) {
+        return '<div class="create">lisää huone "<strong>' + 
+            escape(data.input) +
+            '</strong>"</div>';
+    },
+    no_results: function(data, escape) {
+        return '<div class="create">ei tuloksia "<strong>' + 
+            escape(data.input) + 
             '</strong>"</div>';
     }
 }

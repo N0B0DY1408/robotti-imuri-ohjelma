@@ -48,6 +48,9 @@ def email_login():
     if request.method == "POST":
 
         email = request.json.get("email")
+        number = request.json.get("number")
+
+        print("ROOM NUMBER:", number)
 
         if not email or "@student.kpedu.fi" not in email:
             return jsonify({"success": False, "message": "Syötä kpedu-sähköposti"})
@@ -69,6 +72,9 @@ def email_login():
                 email_as_list
             )
             connect.tira_con.commit()
+
+        # lisää huone jos ei ole
+        add_room(number)
 
         # email lähetys
         subject = f"Koodisi on: [{code}]"
@@ -112,6 +118,46 @@ def email_login():
         varaus_name=varaus_name,
         varaus_room=varaus_room
     )
+
+@app.route("/send_code", methods=["POST"])
+def send_code():
+
+    email = request.json.get("email")
+    number = request.json.get("number")
+
+    print("ROOM NUMBER:", number)
+
+    if not email:
+        return jsonify({"success": False, "message": "Email puuttuu"})
+
+    if not number:
+        return jsonify({"success": False, "message": "Huone puuttuu"})
+
+    if not email:
+        return jsonify({"success": False, "message": "Email puuttuu"})
+
+    email_as_list = [email]
+
+    accountcheck = connect.tira_cur.execute(
+        "SELECT email FROM Users WHERE email = ?",
+        email_as_list
+    )
+
+    if accountcheck.fetchone() is None:
+        connect.tira_cur.execute(
+            "INSERT INTO Users(email) VALUES (?)",
+            email_as_list
+        )
+        connect.tira_con.commit()
+
+    # lisää huone jos ei ole
+    add_room(number)
+
+    # lähetä koodi
+    code = id_generator()
+    login_logic.add_code(email, code)
+
+    return jsonify({"success": True})
 
 @app.route("/verify", methods=["POST"])
 def verify():
