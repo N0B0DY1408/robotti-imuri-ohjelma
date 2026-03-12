@@ -139,19 +139,19 @@ Varaa
 </div>
 
 <div class="container">
-    <table class="table table-striped">
+    <table class="table table-striped" id="table_sort">
         <tr>
-            <th>Käyttäjä</th>
-            <th>kuinka kauan sitten</th>
-            <th>pvm</th>
-            <th>huone</th>
+            <th class="table_button" onclick="sort_table(0)">Käyttäjä</th>
+            <th class="table_button" onclick="sort_table(1)">kuinka kauan sitten</th>
+            <th class="table_button" onclick="sort_table(2)">pvm</th>
+            <th class="table_button" onclick="sort_table(3)">huone</th>
         </tr>
         {% for history_entry in history %}
         <tr>
-        <th>{{history_entry[0]}}</th>
-        <th>{{history_entry[1]}}</th>
-        <th>{{history_entry[2]}}</th>
-        <th>{{history_entry[3]}}</th>
+        <td>{{history_entry[0]}}</td>
+        <td>{{history_entry[1]}}</td>
+        <td>{{history_entry[2]}}</td>
+        <td>{{history_entry[3]}}</td>
         </tr>
         {% endfor %}
     </table>
@@ -171,7 +171,7 @@ Varaa
 <aside>
 <!-- robottien sijaintikuva -->
 </aside>
-
+<script src="/static/table.js"></script>
 <script src="/static/script.js"></script>
 <script src="/static/time.js"></script>
 
