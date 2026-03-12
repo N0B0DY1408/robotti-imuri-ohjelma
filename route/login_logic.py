@@ -13,7 +13,6 @@ def add_code(email, code):
     right_now = datetime.now(timezone.utc).replace(microsecond=0)
     code_time = timedelta(minutes=15) # 15 minuuttii
     code_end_time = (right_now + code_time).timestamp()
-    print(code_end_time)
     data = [email, code_end_time, code]
     connect.tira_cur.execute("INSERT INTO Login VALUES(?,?,?)", data)
     connect.tira_con.commit()
