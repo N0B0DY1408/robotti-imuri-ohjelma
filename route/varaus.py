@@ -73,6 +73,25 @@ def remove_ticket_varaus(laite="testilaite"):
     connect.tira_cur.execute("UPDATE History SET end = ? WHERE device_id = ? AND end = 0", history_update)
     connect.tira_con.commit()
 
+def varaus_history_info():
+    # ottaa kaikki infot jota tarvitsetaan historia taulukkoon sivulla
+    # käyttäjä, aika varauksesta, pvm, huone
+    info = connect.tira_cur.execute("SELECT * FROM History").fetchall()
+    formatted_history = []
+    # lista johon pannaan oikein formatoitu historia
+    right_now = datetime.now().replace(microsecond=0)
+    for entry in info:
+        # entry on tuple yhdestä varauksesta, infon järjestys on sama kun sqlitessä
+        # esim user id on entry[0] ja start on entry[2]
+        name = connect.tira_cur.execute("SELECT name FROM Users WHERE user_id = ?", [entry[0]]).fetchone()
+        # käyttäjän nimi
+        pvm = datetime.fromtimestamp(entry[2])
+        time_since = str(right_now - pvm)
+        # ylhällä otetaan päivämäärä ja aika siitä varauksesta
+        formatted_history.append((name[0],time_since,str(pvm),entry[5]))
+    return formatted_history
+
+
 def varaus_info(item=None): # kuinka mones juttu haluat
     # ottaa viime varauksesta infoa
     info = connect.tira_cur.execute("SELECT * FROM History WHERE end = 0").fetchone()
@@ -89,8 +108,9 @@ def varaus_name():
     username = connect.tira_cur.execute("SELECT name FROM Users WHERE user_id= ?", user_id).fetchone()
     return(username[0])
 
-#if __name__ == "__main__":
+if __name__ == "__main__":
     #ticket_varaus(220)
     #remove_ticket_varaus()
     #print(varaus_info())
     #print(varaus_name())
+    print(varaus_history_info())
