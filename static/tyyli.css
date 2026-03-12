@@ -102,3 +102,12 @@ nav {
     color: white;
     font-size: 18px;
 }
+
+.table_button {
+    color: grey;
+}
+
+.table_button:hover {
+    color: black;
+    cursor: pointer;
+}
