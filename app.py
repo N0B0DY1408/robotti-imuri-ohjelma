@@ -1,15 +1,14 @@
-#muutuja_esimerkki
 import code
 import datetime
 import email
 import smtplib
 import ssl
-from dotenv import load_dotenv
 import re
 import os
 from email.mime.text import MIMEText
 import random
 import string
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, session, jsonify
 from flask_session import Session
 from route import connect, manage_session, login_logic, varaus
@@ -56,9 +55,6 @@ def email_login():
 
         email = request.json.get("email")
         number = request.json.get("number")
-        print(email)
-        print("ROOM NUMBER:", number)
-
         if not email or "@student.kpedu.fi" not in email:
             return jsonify({"success": False, "message": "Syötä kpedu-sähköposti"})
 
@@ -97,7 +93,6 @@ def email_login():
         </body>
         </html>
         """
-        print(code)
         html_message = MIMEText(body, 'html')
         html_message['Subject'] = subject
         html_message['From'] = euser
