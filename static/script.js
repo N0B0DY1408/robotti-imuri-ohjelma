@@ -91,12 +91,12 @@ new TomSelect("#select-email", {
     render: {
     option_create: function(data, escape) {
         return '<div class="create">lisää käyttäjä "<strong>' + 
-            escape(data.input+"@kpedu.fi") + 
+            escape(data.input) + 
             '</strong>"</div>';
     },
     no_results: function(data, escape) {
         return '<div class="create">ei tuloksia "<strong>' + 
-            escape(data.input+"@kpedu.fi") + 
+            escape(data.input) + 
             '</strong>"</div>';
     }
 }
@@ -127,4 +127,36 @@ new TomSelect("#roomSelect", {
     
 });
 
-   
+const Varaus = document.getElementById("Varaus");
+
+Varaus.addEventListener("click", async () => {
+
+    const room = document.getElementById("robottidropdown").value;
+
+    try {
+
+        const res = await fetch("/reserve", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                room: room
+            })
+        });
+
+        const data = await res.json();
+
+        if (data.success){
+            alert("Varaus tehty!");
+            location.reload();
+        } else {
+            alert(data.message || "Varaus epäonnistui");
+        }
+
+    } catch(err){
+        console.error(err);
+        alert("Virhe varauksessa");
+    }
+
+});

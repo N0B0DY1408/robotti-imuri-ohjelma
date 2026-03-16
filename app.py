@@ -25,6 +25,12 @@ epassword = os.getenv("emailpassword")
 app = Flask(__name__,
 template_folder=connect.template_folder)
 
+def email_to_name(email):
+    name_part = email.split("@")[0]
+    name_part = name_part.replace(".", " ")
+    name_part = name_part.title()
+    return name_part
+
 app.config["SESSION_TYPE"] = "filesystem" # Väliaikainen vaihta db jossain vaiheesa
 # mahdollisesti voisi tehdä erillisen tiedoston app.configeille
 # https://flask.palletsprojects.com/en/stable/config/
@@ -68,11 +74,15 @@ def email_login():
         )
 
         if accountcheck.fetchone() is None:
+
+            name = email_to_name(email)
+
             connect.tira_cur.execute(
-                "INSERT INTO Users(email) VALUES (?)", 
-                email_as_list
+                "INSERT INTO Users(email, name) VALUES (?, ?)", 
+                [email, name]
             )
-            connect.tira_con.commit()
+
+        connect.tira_con.commit()
 
         # lisää huone jos ei ole
         add_room(number)
@@ -146,12 +156,13 @@ def send_code():
         email_as_list
     )
 
-    if accountcheck.fetchone() is None:
-        connect.tira_cur.execute(
-            "INSERT INTO Users(email) VALUES (?)",
-            email_as_list
-        )
-        connect.tira_con.commit()
+    name = email_to_name(email)
+
+    connect.tira_cur.execute(
+        "INSERT INTO Users(email, name) VALUES (?, ?)", 
+        [email, name]
+    )
+    connect.tira_con.commit()
 
     # lisää huone jos ei ole
     add_room(number)
@@ -177,7 +188,6 @@ def verify():
 
     login(email)
     return jsonify({"success": True})
-    
 
 
 @app.route("/logincheck", methods=["GET", "POST"])
@@ -258,6 +268,51 @@ def favroom_selector(room_number):
     connect.tira_con.commit()
     # ^ asettaa käyttäjän lempihuoneen sqlitessä
     return True
+
+@app.route("/reserve", methods=["POST"])
+def reserve():
+
+    email = manage_session.isloggedin()
+
+    if email is None:
+        return jsonify({"success": False, "message": "Kirjaudu ensin"})
+
+    room = request.json.get("room")
+
+    if not room:
+        return jsonify({"success": False, "message": "Huone puuttuu"})
+
+
+    # haetaan käyttäjän id
+    user_id = connect.tira_cur.execute(
+        "SELECT user_id FROM Users WHERE email = ?",
+        [email]
+    ).fetchone()
+
+    if user_id is None:
+        return jsonify({"success": False, "message": "Käyttäjää ei löytynyt"})
+
+    user_id = user_id[0]
+
+
+    start_time = int(datetime.datetime.now().timestamp())
+
+    device_id = 1
+
+    room_number = room.split(" ")[0]
+
+
+    connect.tira_cur.execute(
+        """
+        INSERT INTO History (user_id, device_id, start, end, desc, room)
+        VALUES (?, ?, ?, 0, ?, ?)
+        """,
+        [user_id, device_id, start_time, "robotin varaus", room_number]
+    )
+
+    connect.tira_con.commit()
+
+    return jsonify({"success": True})
 
 if __name__ == "__main__":
     app.run(debug=True)
