@@ -56,7 +56,7 @@ def email_login():
 
         email = request.json.get("email")
         number = request.json.get("number")
-
+        print(email)
         print("ROOM NUMBER:", number)
 
         if not email or "@student.kpedu.fi" not in email:
@@ -97,12 +97,11 @@ def email_login():
         </body>
         </html>
         """
-
+        print(code)
         html_message = MIMEText(body, 'html')
         html_message['Subject'] = subject
         html_message['From'] = euser
         html_message['To'] = email
-
         try:
             with smtplib.SMTP(ehost, eport) as server:
                 server.starttls(context=context)
@@ -110,7 +109,6 @@ def email_login():
                 server.sendmail(euser, email, html_message.as_string())
         except:
             return jsonify({"success": False})
-
         return jsonify({"success": True})
 
     # -------- GET --------
@@ -281,36 +279,9 @@ def reserve():
 
     if not room:
         return jsonify({"success": False, "message": "Huone puuttuu"})
+    varaus.remove_ticket_varaus()
+    varaus.ticket_varaus(room)
 
-
-    # haetaan käyttäjän id
-    user_id = connect.tira_cur.execute(
-        "SELECT user_id FROM Users WHERE email = ?",
-        [email]
-    ).fetchone()
-
-    if user_id is None:
-        return jsonify({"success": False, "message": "Käyttäjää ei löytynyt"})
-
-    user_id = user_id[0]
-
-
-    start_time = int(datetime.datetime.now().timestamp())
-
-    device_id = 1
-
-    room_number = room.split(" ")[0]
-
-
-    connect.tira_cur.execute(
-        """
-        INSERT INTO History (user_id, device_id, start, end, desc, room)
-        VALUES (?, ?, ?, 0, ?, ?)
-        """,
-        [user_id, device_id, start_time, "robotin varaus", room_number]
-    )
-
-    connect.tira_con.commit()
 
     return jsonify({"success": True})
 
