@@ -106,6 +106,8 @@ def varaus_info(item=None): # kuinka mones juttu haluat
 def varaus_name():
     user_id = [varaus_info(0)]
     username = connect.tira_cur.execute("SELECT name FROM Users WHERE user_id= ?", user_id).fetchone()
+    if username is None:
+        return None
     return(username[0])
 
 if __name__ == "__main__":
