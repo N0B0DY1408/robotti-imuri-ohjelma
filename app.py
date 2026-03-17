@@ -272,6 +272,11 @@ def reserve():
 
     room = request.json.get("room")
 
+    room_number = room.split(" ")[0]
+
+    # lisätään huone jos ei ole olemassa
+    add_room(room_number)
+
     if not room:
         return jsonify({"success": False, "message": "Huone puuttuu"})
     varaus.remove_ticket_varaus()
