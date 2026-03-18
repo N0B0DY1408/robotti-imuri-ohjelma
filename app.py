@@ -9,7 +9,7 @@ from email.mime.text import MIMEText
 import random
 import string
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, redirect, session, jsonify
+from flask import Flask, render_template, request, redirect, jsonify
 from flask_session import Session
 from route import connect, manage_session, login_logic, varaus
 
@@ -57,6 +57,7 @@ def email_login():
         number = request.json.get("number")
         if not email or "@student.kpedu.fi" not in email:
             return jsonify({"success": False, "message": "Syötä kpedu-sähköposti"})
+            # palauttaa script.js että ei toiminut ja näyttää viestin
 
         email_as_list = [email]
 
@@ -97,15 +98,18 @@ def email_login():
         html_message['Subject'] = subject
         html_message['From'] = euser
         html_message['To'] = email
+        
         try:
             with smtplib.SMTP(ehost, eport) as server:
                 server.starttls(context=context)
                 server.login(euser, epassword)
                 server.sendmail(euser, email, html_message.as_string())
         except:
-            return jsonify({"success": False})
+            return jsonify({"success": False, "message": "Sähköpostin lähettämisellä oli meidän puolella ongelma"})
+            # palauttaa script.js että ei toiminut ja näyttää viestin
+        
         return jsonify({"success": True})
-
+        # palauttaa script.js infon että python tiedosto on valmis
     # -------- GET --------
 
     users = connect.tira_cur.execute(
@@ -115,6 +119,7 @@ def email_login():
     users = connect.r_sqlite_of(users)
 
     user = manage_session.isloggedin()
+    # tarkistaa jos on kirjautunut jotta voi piilottaa juttuja
 
     return render_template(
         "index.html",
@@ -169,15 +174,22 @@ def send_code():
 
 @app.route("/verify", methods=["POST"])
 def verify():
+    # huomioi että käyttäjä voi mennä manuaalisesti tälle sivulle mutta tulee vaan "method not allowed"
     user_code = request.json.get("code")
+    # ottaa js code submit kohdasta code constin
 
     if not user_code:
         return jsonify({"success": False, "message": "Koodi puuttuu"})
+        # palauttaa script.js että ei toiminut ja näyttää viestin
+        # ei normaalisti näy koska kohta johon koodi pannaan on required
+
 
     email = login_logic.use_code(user_code)
+    # tarkistaa jos koodi on dbssä ja ei vanheentunut
 
     if not email:
         return jsonify({"success": False, "message": "Väärä tai vanhentunut koodi"})
+        # palauttaa script.js että ei toiminut ja näyttää viestin
 
     login(email)
     return jsonify({"success": True})
@@ -218,7 +230,7 @@ def reserve_page_info():
 
     return room_display, time_since
 
-def login(email): #tämä kohta nyt tarkistaa tietokannan onko email jo siellä ja jos ei niin lisää sen
+def login(email): # functio joka aktivoituu kun kirjautuu, asettaa käyttäjälle session
     email_as_list = [email]
 
     manage_session.set_session(email)
@@ -264,18 +276,12 @@ def favroom_selector(room_number):
 
 @app.route("/reserve", methods=["POST"])
 def reserve():
-
     email = manage_session.isloggedin()
 
     if email is None:
         return jsonify({"success": False, "message": "Kirjaudu ensin"})
 
     room = request.json.get("room")
-
-    room_number = room.split(" ")[0]
-
-    # lisätään huone jos ei ole olemassa
-    add_room(room_number)
 
     if not room:
         return jsonify({"success": False, "message": "Huone puuttuu"})
