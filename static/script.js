@@ -181,3 +181,24 @@ Varaus.addEventListener("click", async () => {
     }
 
 });
+
+new TomSelect("#huonedropdown", {
+    create: true,
+    persist: false,
+    sortField: {
+        field: "text",
+        direction: "asc"
+    },
+    render: {
+        option_create: function(data, escape) {
+            return '<div class="create">Lisää huone "<strong>' + 
+                escape(data.input) +
+                '</strong>"</div>';
+        },
+        no_results: function(data, escape) {
+            return '<div class="create">Ei tuloksia "<strong>' + 
+                escape(data.input) + 
+                '</strong>"</div>';
+        }
+    }
+});
