@@ -44,13 +44,3 @@ def use_code(code):
         connect.tira_cur.execute("DELETE FROM Login WHERE email = ?", email_of_code)
         connect.tira_con.commit()
         return emailstring
-
-
-if __name__ == "__main__":
-    # nopee test koodi joka vaihtelee jos poistaa vai panee koodin
-    baba = use_code(80085)
-    if baba:
-        print(baba)
-    else:
-        print("väärin")
-        add_code("superbobman", 80085)

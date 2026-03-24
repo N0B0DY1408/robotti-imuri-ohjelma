@@ -1,5 +1,6 @@
 :root { /* pannaan tähän kaikki värit jota käytetään vaitsi perusvärit */
     --kpedu-sininen: #00a4e4;
+    --kpedu-pinkki: #e83980;
 }
 
 main {
@@ -110,4 +111,52 @@ nav {
 .table_button:hover {
     color: black;
     cursor: pointer;
+}
+
+.room_box {
+    overflow: auto;
+    height: 250px;
+}
+
+.room_table {
+    width: 100%;
+}
+
+.room_tr {
+    height: 100px;
+}
+
+.room_tr > th {
+    margin: 5px;
+    padding: 5px;
+    width: 25%;
+}
+
+.room_div > input {
+    visibility:hidden;
+    position: absolute;
+}
+
+.room_div > label {
+    height: 110%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.room_div {
+    background-color: gray;
+    border-radius: 30px;
+    height: 80px;
+
+}
+
+.room_div:hover {
+    background-color: lightblue;
+}
+
+/* tila div jossa on input joka on valittu */
+.room_div:has(input:checked) {
+    background-color: var(--kpedu-sininen)
 }
