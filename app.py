@@ -45,7 +45,7 @@ def id_generator(size=4, chars=string.digits):
 
 @app.route("/", methods=["GET", "POST"])
 def email_login():
-    room_display, time_since = reserve_page_info()
+    room_display, time_since, favroom = reserve_page_info()
     varaus_name = varaus.varaus_name()
     varaus_room = varaus.varaus_info(5)
     history = varaus.varaus_history_info()
@@ -129,7 +129,8 @@ def email_login():
         varaus_name=varaus_name,
         varaus_room=varaus_room,
         history=history,
-        user=user
+        user=user,
+        favroom=favroom
     )
 
 @app.route("/send_code", methods=["POST"])
@@ -215,20 +216,48 @@ def reserve_page_info():
         time_since = time_since[0]
         time_since = datetime.datetime.fromtimestamp(int(time_since))
     # yllä me otetaan tietokannasta viime varauksen alun
-
+    
+    favroom = manage_session.user_info(5)
     room_numbers = connect.tira_cur.execute("SELECT number FROM Rooms").fetchall()
-    room_names = connect.tira_cur.execute("SELECT name FROM Rooms").fetchall()
     rooms_numbers = connect.r_sqlite_of(room_numbers)
-    room_names = connect.r_sqlite_of(room_names)
     # yllä me otetaan huone infoa sqlitestä ja vähän formatoidaan
-    room_display = []
-    for num, nam in zip(rooms_numbers, room_names):
-        if nam is None:
-            room_display.append(num)
-        else:
-            room_display.append(str(num) + " " + nam)
 
-    return room_display, time_since
+    # alhalla me tehdään kaikki listat ja dictit ja intit jota tarvitaan seuraavaan kohtaan
+    if favroom:
+        entry = 1
+    else:
+        entry = 0
+    room_list = []
+    lower_room_list = []
+    room_dict = {}
+    favroom_dict = {}
+    # tämä koodipätkä formatoi huoneet oikein 4 pituiseen html pöytään
+    # ja oikein formatoi jos on lempihuone käyttäjällä
+    for num in rooms_numbers:
+        # entry päättää million seuraava tr alkaa html sisällä
+        nam = connect.tira_cur.execute("SELECT name FROM Rooms WHERE number =(?)",[num]).fetchone()
+        nam = nam[0]
+        if num == favroom:
+            favroom_dict.update({"num": num})
+            if nam is not None:
+                favroom_dict.update({"nam": nam})
+        else:
+            entry += 1
+            room_dict.update({"num": num})
+
+            if nam is not None:
+                room_dict.update({"nam": nam})
+            lower_room_list.append(room_dict.copy())
+            room_dict.clear()
+            if entry % 4 == 0: # i <3 modulo
+                room_list.append(lower_room_list.copy())
+                lower_room_list.clear()
+            # me tehdään lista jossa on 4 pituisia listoja dictejä
+    if entry % 4 != 0:
+        room_list.append(lower_room_list.copy())
+        lower_room_list.clear()
+    print(room_list)
+    return room_list, time_since, favroom_dict
 
 def login(email): # functio joka aktivoituu kun kirjautuu, asettaa käyttäjälle session
     email_as_list = [email]

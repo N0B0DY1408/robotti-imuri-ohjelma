@@ -25,7 +25,7 @@ def user_info(item=None): # kuinka mones juttu haluat
     # helppo functio joka ottaa kaikki infot käyttäjästä sqlitestä käyttämällä sessiota
     email = isloggedin()
     if email is None:
-        return False
+        return None
     email_as_list = [email]
     info = connect.tira_cur.execute("SELECT * FROM Users WHERE email= ?", email_as_list).fetchone()
     # palauttaa infon listana järjestyksessä missä on sqlitessä (esim user id eka)
@@ -49,6 +49,3 @@ def all_users_info(item="email"): # minkä jutun haluat
         return False
     new_info = connect.r_sqlite_of(info)
     return new_info
-
-#if __name__ == "__main__":
-    #print(all_users_info())

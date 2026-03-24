@@ -74,8 +74,14 @@ Kirjaudu / Rekisteröidy
 
 <select name="room" id="roomSelect">
 
-{% for room in room_display %}
-<option value="{{ room }}">{{ room }}</option>
+{% for rooms in room_display %}
+{% for room in rooms %}
+{% if room.nam %}
+<option value="{{room.num}}">{{room.num}} {{room.nam}}</option>
+{% else %}
+<option value="{{room.num}}">{{room.num}}</option>
+{% endif %}
+{% endfor %}
 {% endfor %}
 
 </select>
@@ -132,8 +138,14 @@ Hyväksyn että työpaikka vakoilee miten siivoan huonettani
 
 <select class="border p-2 px-5" name="huoneet" id="huonedropdown">
 
-{% for room in room_display %}
-<option value="{{room}}">{{room}}</option>
+{% for rooms in room_display %}
+{% for room in rooms %}
+{% if room.nam %}
+<option value="{{room.num}}">{{room.num}} {{room.nam}}</option>
+{% else %}
+<option value="{{room.num}}">{{room.num}}</option>
+{% endif %}
+{% endfor %}
 {% endfor %}
 
 </select>
@@ -155,11 +167,44 @@ Varaa
 </div>
 </div>
 
+<!-- mustaa magiaa joka tekee tila valikon -->
+<!-- katso myös: mun css ja huoneitten formatointi app.pyssä jos aiot muokata -->
+<div class="container room_box">
+    <table class="room_table">
+        <tr class="room_tr">
+        {% if favroom %}
+        <th><div class="room_div">
+            <input class="room_input" type="radio" id="{{favroom.num}}" value="{{favroom.num}}" name="room_select" checked>
+            <label for="{{favroom.num}}"><p>{{favroom.num}}</p>
+            {% if favroom.nam %}
+            <p>: {{favroom.nam}}</p>
+            {% endif %}
+            </label>
+        </div></th>
+        {% endif %}
+
+        {% for rooms in room_display %}
+        {% for room in rooms %}
+            <th><div class="room_div">
+                <input class="room_input" type="radio" id="{{room.num}}" value="{{room.num}}" name="room_select">
+                <label for="{{room.num}}"><p>{{room.num}}</p>
+                {% if room.nam %}
+                <p>: {{room.nam}}</p>
+                {% endif %}
+                </label>
+            </div></th>
+        {% endfor %}
+        </tr><tr class="room_tr">
+        {% endfor %}
+        </tr>
+    </table>
+</div>
+
 <div class="container">
     <table class="table table-striped" id="table_sort">
         <tr>
             <th class="table_button" onclick="sort_table(0)">Käyttäjä</th>
-            <th class="table_button" onclick="sort_table(1)">kuinka kauan sitten</th>
+            <th class="table_button" onclick="sort_table(2)">kuinka kauan sitten</th>
             <th class="table_button" onclick="sort_table(2)">pvm</th>
             <th class="table_button" onclick="sort_table(3)">huone</th>
         </tr>

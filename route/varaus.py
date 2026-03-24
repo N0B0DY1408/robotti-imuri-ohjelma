@@ -109,10 +109,3 @@ def varaus_name():
     if username is None:
         return None
     return(username[0])
-
-if __name__ == "__main__":
-    #ticket_varaus(220)
-    #remove_ticket_varaus()
-    #print(varaus_info())
-    #print(varaus_name())
-    print(varaus_history_info())
