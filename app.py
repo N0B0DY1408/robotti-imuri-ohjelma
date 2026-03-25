@@ -48,6 +48,10 @@ def email_login():
     room_display, time_since, favroom = reserve_page_info()
     varaus_name = varaus.varaus_name()
     varaus_room = varaus.varaus_info(5)
+    viime_varaus = {
+        "name": varaus_name,
+        "room": varaus_room
+    }
     history = varaus.varaus_history_info()
     # otetaan huone valikko ja aika viime varauksesta
 
@@ -80,9 +84,6 @@ def email_login():
             )
 
         connect.tira_con.commit()
-
-        # lisää huone jos ei ole
-        add_room(number)
 
         # email lähetys
         subject = f"Koodisi on: [{code}]"
@@ -126,8 +127,7 @@ def email_login():
         users=users,
         room_display=room_display,
         time_since=time_since,
-        varaus_name=varaus_name,
-        varaus_room=varaus_room,
+        viime_varaus=viime_varaus,
         history=history,
         user=user,
         favroom=favroom
@@ -162,10 +162,6 @@ def send_code():
         [email, name]
     )
     connect.tira_con.commit()
-
-    # lisää huone jos ei ole
-    add_room(number)
-    
 
     # lähetä koodi
     code = id_generator()
@@ -263,6 +259,34 @@ def login(email): # functio joka aktivoituu kun kirjautuu, asettaa käyttäjäll
     email_as_list = [email]
 
     manage_session.set_session(email)
+
+@app.route("/room_thing", methods=["POST"])
+def room_thing():
+    email = manage_session.isloggedin()
+    if email is None:
+        return jsonify({"success": False, "message": "Et ole kirjautunut sisään"})
+
+    new_room_num = request.json.get("num")
+    if not new_room_num.isdigit():
+        return jsonify({"success": False, "message": "Ei numero"})
+
+    print(new_room_num.isdigit())
+    new_fav = request.json.get("new_fav")
+    room_success = add_room(new_room_num)
+    if new_fav:
+        favroom_selector(new_room_num)
+    
+    # viesti käyttäjälle
+    if room_success and new_fav:
+        return jsonify({"success": True, "message": "Uusi huone tehty ja asetettu oletukseksi"})
+    if room_success and not new_fav:
+        return jsonify({"success": True, "message": "Uusi huone tehty"})
+    if new_fav:
+        return jsonify({"success": True, "message": "Huone olemassa, asetettu oletukseksi"})
+    if not new_fav:
+        return jsonify({"success": False, "message": "Huone jo olemassa"})
+
+
 
 def add_room(room_number, room_name=None):
     # funktio joka tekee huoneen jos se ei ole olemassa
