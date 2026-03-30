@@ -111,9 +111,9 @@ nav {
 .center_contents {
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
-.add_room_div > label,
 .room_div > label {
     height: 110%;
     width: 100%;
@@ -133,6 +133,15 @@ nav {
     padding-top: 10px;
     color: lightblue;
     font-size: xx-large;
+}
+
+.disabled_item {
+    border-color: lightgray;
+    cursor: not-allowed;
+}
+
+.disabled_item > p {
+    color: lightgray;
 }
 
 .room_div {
@@ -161,4 +170,14 @@ nav {
 
 .room_name { /* display none koska huone nimet eivät ollu paras idea */
     display: none;
+}
+
+.input {
+    width: 40px;
+    border: none;
+    border: 3px solid rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    margin: 0 5px;
+    text-align: center;
+    font-size: 36px;
 }
