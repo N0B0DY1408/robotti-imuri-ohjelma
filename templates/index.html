@@ -25,22 +25,24 @@
     <img class="header_img" id="logo" src="https://www.kpedu.fi/ResourcePackages/KPedu/assets/dist/images/logo.png">
     <img class="header_img" id="eu_flag" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/330px-Flag_of_Europe.svg.png">
     </div>
-    <div class="container">
-    <h1 id="teksti">Tällä sivulla pääset varaamaan robotteja käyttöösi</h1>
+    <div class="container center_contents">
+    <h1 id="teksti">Tira robo varaus</h1>
     </div>
-    <nav class="center_contents">
+    <nav>
     {% if user %}
-        <div>
-        <h2 class="welcome-text">
-        Tervetuloa {{user}}
-        </h2>
-        </div>
-        <a href="/logout" class="btn btn-danger btn-lg">
-        Kirjaudu ulos
-        </a>
+    <div class="container center_contents">
+
+    <h2 class="welcome-text">
+    Tervetuloa {{user}}
+    </h2>
+    </div>
+    <div class="container center_contents">
+    <a href="/logout" class="btn btn-danger btn-lg">
+    Kirjaudu ulos
+    </a>
 
     {% else %}
-
+    <div class="container center_contents">
     <button class="btn btn-info btn-lg" data-toggle="modal" data-target="#authModal">
     Kirjaudu / Rekisteröidy
     </button>
@@ -48,6 +50,7 @@
     {% endif %}
 
     <a href="help.html" class="btn btn-info btn-lg">Apua</a>
+    </div>
 
     </nav>
 </header>
@@ -124,7 +127,7 @@ Hyväksyn että työpaikka vakoilee miten siivoan huonettani
 </div>
 </div>
 
-<!-- modal jonka avulla voi panna uuden huoneen -->
+<!-- NEW ROOM MODAL -->
 <div class="modal fade" id="addRoomModal" role="dialog">
 <div class="modal-dialog">
 <div class="modal-content">
@@ -148,6 +151,40 @@ Hyväksyn että työpaikka vakoilee miten siivoan huonettani
 <button type="submit" class="btn btn-primary">Lähetä</button>
 
 </form>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- HISTORY MODAL -->
+<div class="modal fade" id="historyModal" role="dialog">
+<div class="modal-dialog">
+<div class="modal-content">
+
+<div class="modal-header">
+<button type="button" class="close" data-dismiss="modal">&times;</button>
+<h4 class="modal-title" id="modalTitle">Historia</h4>
+<div>
+    <table class="table table-striped" id="table_sort">
+        <tr>
+            <th class="table_button" onclick="sort_table(0)">Käyttäjä</th>
+            <th class="table_button" onclick="sort_table(2)">kuinka kauan sitten</th>
+            <th class="table_button" onclick="sort_table(2)">pvm</th>
+            <th class="table_button" onclick="sort_table(3)">huone</th>
+        </tr>
+        {% for history_entry in history %}
+        <tr>
+        <td>{{history_entry[0]}}</td>
+        <td>{{history_entry[1]}}</td>
+        <td>{{history_entry[2]}}</td>
+        <td>{{history_entry[3]}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+<div id="emailView">
+
 </div>
 </div>
 </div>
@@ -200,42 +237,37 @@ Hyväksyn että työpaikka vakoilee miten siivoan huonettani
 <!-- varausnappi alue -->
 <div class="container center_contents">
 <div class="varaus_extra_buttons">
+<div class="center_contents">
 {% if user %}
 <button class="btn btn-varaus mt-3" type="submit">Varaa</button>
 {% else %}
 <button class="btn mt-3" disabled>Varaa</button>
 {% endif %}
-
-<h5 class="mt-3">Historia</h5>
-
+</div>
+<div class="center_contents">
 <div class="d-flex gap-5 align-items-center mt-2">
+    <h5 class="mt-3">Nyky varaus</h5>
+
     <span class="border px-3 py-1 ">{{viime_varaus.room}}</span>
         <span class="text-danger">{{viime_varaus.name}}</span>
+        <p id="timer"></p>
+
+</div>
 </div>
 
-<p id="timer"></p>
+<div class="center_contents">
+<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#historyModal">
+historia
+</button>
+</div>
+
 </div>
 </div>
 </form>
 
-<div class="container">
-    <table class="table table-striped" id="table_sort">
-        <tr>
-            <th class="table_button" onclick="sort_table(0)">Käyttäjä</th>
-            <th class="table_button" onclick="sort_table(2)">kuinka kauan sitten</th>
-            <th class="table_button" onclick="sort_table(2)">pvm</th>
-            <th class="table_button" onclick="sort_table(3)">huone</th>
-        </tr>
-        {% for history_entry in history %}
-        <tr>
-        <td>{{history_entry[0]}}</td>
-        <td>{{history_entry[1]}}</td>
-        <td>{{history_entry[2]}}</td>
-        <td>{{history_entry[3]}}</td>
-        </tr>
-        {% endfor %}
-    </table>
-</div>
+
+
+
     
         
 

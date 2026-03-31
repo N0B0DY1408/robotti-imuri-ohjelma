@@ -10,8 +10,8 @@ main {
 
 
 .header_img {
-    height: 80px;
-    margin-right: 200px;
+    max-width: 200px;
+    min-width: 50px;
 }
 
 header {
@@ -21,10 +21,6 @@ header {
 
 #teksti {
     text-align: center;
-}
-
-nav {
-    margin-top: 50px;
 }
 
 .modal {

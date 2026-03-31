@@ -83,12 +83,21 @@ def varaus_history_info():
     for entry in info:
         # entry on tuple yhdestä varauksesta, infon järjestys on sama kun sqlitessä
         # esim user id on entry[0] ja start on entry[2]
-        name = connect.tira_cur.execute("SELECT name FROM Users WHERE user_id = ?", [entry[0]]).fetchone()
+        name1 = connect.tira_cur.execute("SELECT name FROM Users WHERE user_id = ?", [entry[0]]).fetchone()
+        if name1 is None:
+            name2 = None
+        else:
+            name2 = name1[0]
+        # täydellisiä muuttuja nimiä älä edes pohdi sanoa toisin /j
+        
         # käyttäjän nimi
         pvm = datetime.fromtimestamp(entry[2])
         time_since = str(right_now - pvm)
         # ylhällä otetaan päivämäärä ja aika siitä varauksesta
-        formatted_history.append((name[0],time_since,str(pvm),entry[5]))
+        try:
+            formatted_history.append((name2,time_since,str(pvm),entry[5]))
+        except Exception as e:
+            print(e)
     return formatted_history
 
 
