@@ -21,34 +21,38 @@
 <main>
 
 <header>
-    <img id="logo" src="https://www.kpedu.fi/ResourcePackages/KPedu/assets/dist/images/logo.png">
-    <img id="logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/330px-Flag_of_Europe.svg.png">
+    <div class="center_contents">
+    <img class="header_img" id="logo" src="https://www.kpedu.fi/ResourcePackages/KPedu/assets/dist/images/logo.png">
+    <img class="header_img" id="eu_flag" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/330px-Flag_of_Europe.svg.png">
+    </div>
+    <div class="container">
     <h1 id="teksti">Tällä sivulla pääset varaamaan robotteja käyttöösi</h1>
+    </div>
+    <nav class="center_contents">
+    {% if user %}
+        <div>
+        <h2 class="welcome-text">
+        Tervetuloa {{user}}
+        </h2>
+        </div>
+        <a href="/logout" class="btn btn-danger btn-lg">
+        Kirjaudu ulos
+        </a>
+
+    {% else %}
+
+    <button class="btn btn-info btn-lg" data-toggle="modal" data-target="#authModal">
+    Kirjaudu / Rekisteröidy
+    </button>
+
+    {% endif %}
+
+    <a href="help.html" class="btn btn-info btn-lg">Apua</a>
+
+    </nav>
 </header>
 
-<nav>
 
-{% if user %}
-    
-    <h2 class="welcome-text">
-    Tervetuloa {{ user.split("@")[0] }}
-    </h2>
-
-    <a href="/logout" class="btn btn-danger btn-lg">
-    Kirjaudu ulos
-    </a>
-
-{% else %}
-
-<button class="btn btn-info btn-lg" data-toggle="modal" data-target="#authModal">
-Kirjaudu / Rekisteröidy
-</button>
-
-{% endif %}
-
-<a href="help.html" class="btn btn-info btn-lg">Apua</a>
-
-</nav>
 
 <!-- LOGIN MODAL -->
 <div class="modal fade" id="authModal" role="dialog">

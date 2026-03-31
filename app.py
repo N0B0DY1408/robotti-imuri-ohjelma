@@ -58,7 +58,6 @@ def email_login():
     if request.method == "POST":
 
         email = request.json.get("email")
-        number = request.json.get("number")
         if not email or "@student.kpedu.fi" not in email:
             return jsonify({"success": False, "message": "Syötä kpedu-sähköposti"})
             # palauttaa script.js että ei toiminut ja näyttää viestin
@@ -119,7 +118,7 @@ def email_login():
 
     users = connect.r_sqlite_of(users)
 
-    user = manage_session.isloggedin()
+    user = manage_session.user_info(2)
     # tarkistaa jos on kirjautunut jotta voi piilottaa juttuja
 
     return render_template(
