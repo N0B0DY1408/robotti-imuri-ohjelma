@@ -44,12 +44,12 @@
     {% else %}
     <div class="container center_contents">
     <button class="btn btn-info btn-lg" data-toggle="modal" data-target="#authModal">
-    Kirjaudu / Rekisteröidy
+    Kirjaudu sisään
     </button>
 
     {% endif %}
 
-    <a href="help.html" class="btn btn-info btn-lg">Apua</a>
+    <a href="help.html" class="btn btn-info btn-lg" id="btn-help">Apua</a>
     </div>
 
     </nav>
@@ -98,8 +98,8 @@ Hyväksyn että työpaikka vakoilee miten siivoan huonettani
 
 <form id="codeForm">
 
-<div class="container center_contents">
-    <div id="inputs" class="container">
+<div class="center_contents">
+    <div id="inputs">
         <input class="input" type="text" name="num1" inputmode="numeric" maxlength="1">
         <input class="input" type="text" name="num2" inputmode="numeric" maxlength="1">
         <input class="input" type="text" name="num3" inputmode="numeric" maxlength="1">
@@ -267,22 +267,8 @@ historia
 
 
 
-
-    
-        
-
-        <!---robotin varaus kentät Sähköpostilla. tarkistaa että on kpedu sähköposti ja niin että kpedu on oikeassa kohtaa jotta tunnistaa opettajaksi--->
-
-
-    <aside>
-        <!---kuva siitä missä se robotti on ollut--->
-    </aside>
-
 </main>
 
-<aside>
-<!-- robottien sijaintikuva -->
-</aside>
 <script src="/static/table.js"></script>
 <script src="/static/script.js"></script>
 <script src="/static/time.js"></script>
