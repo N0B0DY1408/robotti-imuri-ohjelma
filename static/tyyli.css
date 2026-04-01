@@ -87,6 +87,17 @@ header {
     height: 250px;
     border: 5px solid lightcyan;
     border-radius: 15px;
+    max-height: 85vh;
+}
+
+.history_box {
+    overflow: auto;
+    height: 250px;
+}
+
+.history_top_row {
+    position: sticky;
+    top: 0;
 }
 
 .room_table {
@@ -183,17 +194,21 @@ header {
 }
 
 @media only screen and (max-width: 600px) {
-    .input {
-        width: 30px;
-        border: none;
-        border: 3px solid rgba(0, 0, 0, 0.5);
-        border-radius: 3px;
-        margin: 0 3px;
-        text-align: center;
-        font-size: 27px;
-    }
 
     #table_sort {
-        font-size: 0.8rem;
+        font-size: 85%;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 5px;
+    }
+}
+
+@media only screen and (orientation: landscape) {
+
+    .modal-content {
+        margin: 2% auto;
+        max-height: 90vh;
     }
 }
