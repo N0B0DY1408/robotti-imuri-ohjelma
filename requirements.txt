@@ -2,3 +2,4 @@ flask
 flask_session
 bcrypt
 dotenv
+gunicorn

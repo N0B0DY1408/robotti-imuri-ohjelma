@@ -2,35 +2,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>testisivu</title>
+    <title>Apusivu</title>
     <link rel="stylesheet" href="../static/tyyli.css"/>
 </head>
 
 <main>
 
-    <header>
-        <h1>Tämä on testi sivu katsotaan mitä tapahtuu tälle sivulle pikkuhiljaa</h1>
-    </header>
-
-    <nav>
-        <a herf="login-register.html">Kirjaudu/rekisteröidy</a>
-
-        <a href="main.html">Etusivu</a>
-    </nav>
-
-    <body onload="stop_watch('{{ time_since }}')">
-        <!-- ajastin panee id timeriin ajan viime varauksesta, tarvitsee myös onload ^ -->
-        <div class="debugcircle">
-            <p id="timer"></p>
-            <script src="../static/time.js"></script>
-        </div>
-
-
+    <body>
+        <p>
+            Tällä sivulla voit varata kpedun tira robottia siivoamaan huoneen, 
+            tällä hetkellä sivulla voi olla ainoastaan yksi robotti.
+            kirjaudu sisään pääsivulla painamalla "kirjaudu sisään", anna sähköposti,
+            ja sinne lähetetään koodi jolla voit kirjautua.
+            sen jälkeen voit tehdä varauksia, kirjautua ulos, tai lisätä huoneita.
+            jotta voit lisätä huoneen, mene huonevalikon loppuun ja paina plus nappia,
+            sitten täytä huoneen numero, ja voit myös asettaa itselle oletukseksi.
+            jos huone on jo valikossa, voit asettaa sen oletukseksi tällä myös.
+            jos haluat tehdä varauksen sinulla pitää olla huone valittuna,
+            jos sinulla on oletushuone se on automaattisesti valittuna, voit
+            myös painaa jotain huonetta valikossa.
+            kun sinä olet kirjautunut ja sinulla on huone valittu, paina "varaa" nappia.
+            sinun varaus loppuu kun joku toinen painaa varaus nappia,
+            ajatus on että robotilla on qr koodi ja ainoastaan tulee tälle sivulle siitä
+        </p>
     </body>
-
-    <aside>
-        
-    </aside>
 
 </main>
 

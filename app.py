@@ -1,9 +1,6 @@
-import code
 import datetime
-import email
 import smtplib
 import ssl
-import re
 import os
 from email.mime.text import MIMEText
 import random
@@ -24,8 +21,8 @@ epassword = os.getenv("emailpassword")
 app = Flask(__name__,
 template_folder=connect.template_folder)
 
-def email_to_name(email):
-    name_part = email.split("@")[0]
+def email_to_name(user_email):
+    name_part = user_email.split("@")[0]
     name_part = name_part.replace(".", " ")
     name_part = name_part.title()
     return name_part
@@ -40,7 +37,9 @@ def id_generator(size=4, chars=string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
     # id generator email koodeihin
 
-
+@app.route("/apua")
+def helpsite():
+    return render_template("help.html")
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -57,29 +56,28 @@ def email_login():
 
     if request.method == "POST":
 
-        email = request.json.get("email")
-        if not email or "@student.kpedu.fi" not in email:
+        user_email = request.json.get("email")
+        if not user_email or "@student.kpedu.fi" not in user_email:
             return jsonify({"success": False, "message": "Syötä kpedu-sähköposti"})
             # palauttaa script.js että ei toiminut ja näyttää viestin
 
-        email_as_list = [email]
 
         code = id_generator()
-        login_logic.add_code(email, code)
+        login_logic.add_code(user_email, code)
 
         # lisää käyttäjä jos ei ole
         accountcheck = connect.tira_cur.execute(
             "SELECT email FROM Users WHERE email = ?", 
-            email_as_list
+            [user_email]
         )
 
         if accountcheck.fetchone() is None:
 
-            name = email_to_name(email)
+            name = email_to_name(user_email)
 
             connect.tira_cur.execute(
                 "INSERT INTO Users(email, name) VALUES (?, ?)", 
-                [email, name]
+                [user_email, name]
             )
 
         connect.tira_con.commit()
@@ -97,13 +95,13 @@ def email_login():
         html_message = MIMEText(body, 'html')
         html_message['Subject'] = subject
         html_message['From'] = euser
-        html_message['To'] = email
+        html_message['To'] = user_email
         
         try:
             with smtplib.SMTP(ehost, eport) as server:
                 server.starttls(context=context)
                 server.login(euser, epassword)
-                server.sendmail(euser, email, html_message.as_string())
+                server.sendmail(euser, user_email, html_message.as_string())
         except:
             return jsonify({"success": False, "message": "Sähköpostin lähettämisellä oli meidän puolella ongelma"})
             # palauttaa script.js että ei toiminut ja näyttää viestin
@@ -135,36 +133,31 @@ def email_login():
 @app.route("/send_code", methods=["POST"])
 def send_code():
 
-    email = request.json.get("email")
+    user_email = request.json.get("email")
     number = request.json.get("number")
 
-    print("ROOM NUMBER:", number)
-
-    if not email:
+    if not user_email:
         return jsonify({"success": False, "message": "Email puuttuu"})
 
     if not number:
         return jsonify({"success": False, "message": "Huone puuttuu"})
 
-    
-    email_as_list = [email]
-
     accountcheck = connect.tira_cur.execute(
         "SELECT email FROM Users WHERE email = ?",
-        email_as_list
+        [user_email]
     )
 
-    name = email_to_name(email)
+    name = email_to_name(user_email)
 
     connect.tira_cur.execute(
         "INSERT INTO Users(email, name) VALUES (?, ?)", 
-        [email, name]
+        [user_email, name]
     )
     connect.tira_con.commit()
 
     # lähetä koodi
     code = id_generator()
-    login_logic.add_code(email, code)
+    login_logic.add_code(user_email, code)
 
     return jsonify({"success": True})
 
@@ -180,22 +173,15 @@ def verify():
         # ei normaalisti näy koska kohta johon koodi pannaan on required
 
 
-    email = login_logic.use_code(user_code)
+    user_email = login_logic.use_code(user_code)
     # tarkistaa jos koodi on dbssä ja ei vanheentunut
 
-    if not email:
+    if not user_email:
         return jsonify({"success": False, "message": "Väärä tai vanhentunut koodi"})
         # palauttaa script.js että ei toiminut ja näyttää viestin
 
-    login(email)
+    login(user_email)
     return jsonify({"success": True})
-
-
-@app.route("/logincheck", methods=["GET", "POST"])
-def logincheck():
-    # debug sivu ennen kun missään muualla on tätä infoo
-    baba = manage_session.user_info()
-    return f"<p>{baba}</p>"
 
 @app.route("/logout", methods=["GET", "POST"])
 def logout(): # jos menee /logout sivulle kirjaudut ulos
@@ -251,25 +237,19 @@ def reserve_page_info():
     if entry % 4 != 0:
         room_list.append(lower_room_list.copy())
         lower_room_list.clear()
-    print(room_list)
     return room_list, time_since, favroom_dict
 
-def login(email): # functio joka aktivoituu kun kirjautuu, asettaa käyttäjälle session
-    email_as_list = [email]
-
-    manage_session.set_session(email)
+def login(user_email): # functio joka aktivoituu kun kirjautuu, asettaa käyttäjälle session
+    manage_session.set_session(user_email)
 
 @app.route("/room_thing", methods=["POST"])
 def room_thing():
-    email = manage_session.isloggedin()
-    if email is None:
+    user_email = manage_session.isloggedin()
+    if user_email is None:
         return jsonify({"success": False, "message": "Et ole kirjautunut sisään"})
 
     new_room_num = request.json.get("num")
-    if not new_room_num.isdigit():
-        return jsonify({"success": False, "message": "Ei numero"})
 
-    print(new_room_num.isdigit())
     new_fav = request.json.get("new_fav")
     room_success = add_room(new_room_num)
     if new_fav:
@@ -312,15 +292,15 @@ def favroom_selector(room_number):
     # pane room_number kohtaan huoneen numero esim 218
     # palauttaa False jos ei toiminut, palauttaa True jos toimi
     try:
-        email = manage_session.isloggedin()
-        if email is None:
+        user_email = manage_session.isloggedin()
+        if user_email is None:
             print("ei kirjautunut sisään")
             return False
     except RuntimeError:
         print("ei yhteys serveriin")
         return False
     # ^ ottaa käyttäjän emailin sessiosta
-    favroom_update = [room_number, email]
+    favroom_update = [room_number, user_email]
     connect.tira_cur.execute("UPDATE Users SET favroom = ? WHERE email = ?", favroom_update)
     connect.tira_con.commit()
     # ^ asettaa käyttäjän lempihuoneen sqlitessä
@@ -328,9 +308,9 @@ def favroom_selector(room_number):
 
 @app.route("/reserve", methods=["POST"])
 def reserve():
-    email = manage_session.isloggedin()
+    user_email = manage_session.isloggedin()
 
-    if email is None:
+    if user_email is None:
         return jsonify({"success": False, "message": "Kirjaudu ensin"})
 
     room = request.json.get("room")
@@ -345,5 +325,3 @@ def reserve():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
