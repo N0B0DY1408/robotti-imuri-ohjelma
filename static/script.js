@@ -7,15 +7,19 @@ const Varaus = document.getElementById("Varaus");
 const checkbox = document.getElementById("check1");
 // check1 on se required checkbox, tarkistetaan jos ehdot on hyväksytty tarpeettomasti
 
+const modalTitle = document.getElementById("modalTitle"); 
 const emailView = document.getElementById("emailView");
 const codeView = document.getElementById("codeView");
-const successView = document.getElementById("successView"); // ei käytetä
-// codeView ja emailView on ne popup kohdat johon panee emailin tai koodin
+// emailView ja codeView on login modalista
+// newRoomView ja deleteView ovat huone lisäys/poisto modaalista
+const roomModalTitle = document.getElementById("roomModalTitle"); 
+const newRoomView = document.getElementById("newRoomView");
+const deleteView = document.getElementById("deleteView");
 
-const modalTitle = document.getElementById("modalTitle"); 
-// jotta voi piilottaa 2 juttua vaikka suurin osa piilottamisesta on pythonin puolella
+// jotta voi vaihtaa yhessä modaalissa näkymää
 
-function toggleModalMode() {
+function toggleLoginModalMode() {
+    // vaihtaa modaalin ulkonäköä
     if (emailView.style.display == "none") {
         emailView.style.display = "block";
         codeView.style.display = "none";
@@ -24,6 +28,19 @@ function toggleModalMode() {
     emailView.style.display = "none";
     codeView.style.display = "block";
     modalTitle.innerText = "Syötä vahvistuskoodi";
+    };
+};
+
+function toggleRoomModalMode() {
+    // vaihtaa modaalin ulkonäköä
+    if (newRoomView.style.display == "none") {
+        newRoomView.style.display = "block";
+        deleteView.style.display = "none";
+        roomModalTitle.innerText = "Uusi huone/Aseta oletus";
+    } else {
+    newRoomView.style.display = "none";
+    deleteView.style.display = "block";
+    roomModalTitle.innerText = "Poista huone";
     };
 };
 
@@ -55,7 +72,7 @@ signupForm.addEventListener("submit", async (e) => {
         // odottaa että app.py palauttaa jsonify({"success": True})
 
         if (data.success) {
-            toggleModalMode()
+            toggleLoginModalMode()
         } else {
             alert(data.message || "Virhe");
             // näyttää virhe viestin, oletuksena "Virhe" mutta jos teette lisää pankaa oma virhe
@@ -131,6 +148,40 @@ addRoomForm.addEventListener("submit", async (e) => {
         if (data.success) {
             alert(data.message || "Onnistui!")
         $('#addRoomModal').modal('hide');
+        // piilottaa huone kohdan heti kun on valmis
+        location.reload();
+        // refreshaa sivun
+        } else {
+            alert(data.message || "Virhe");
+            // näyttää virhe viestin
+            // sama kun email submitilla
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert("Virhe vahvistuksessa");
+    }
+});
+
+deleteRoomForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    // tämä skripti antaa käyttäjän poistaa huoneita
+    const num = deleteRoomForm.delete_room_num.value;
+    try {
+        const res = await fetch("/delete_room_thing", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ num: num }),
+        });
+
+        const data = await res.json();
+        // odottaa että python on valmis
+
+        if (data.success) {
+            alert(data.message || "Onnistui!")
+        $('#deleteRoomModal').modal('hide');
         // piilottaa huone kohdan heti kun on valmis
         location.reload();
         // refreshaa sivun
@@ -249,6 +300,17 @@ new TomSelect("#new_room_num", {
                 escape(data.input) +
                 '</strong>"</div>';
         },
+        no_results: function(data, escape) {
+            return '<div class="create">Ei tuloksia "<strong>' + 
+                escape(data.input) + 
+                '</strong>"</div>';
+        }
+    }
+});
+
+new TomSelect("#delete_room_num", {
+    persist: false,
+    render: {
         no_results: function(data, escape) {
             return '<div class="create">Ei tuloksia "<strong>' + 
                 escape(data.input) + 

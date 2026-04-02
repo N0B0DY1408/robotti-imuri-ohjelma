@@ -287,6 +287,39 @@ def add_room(room_number, room_name=None):
     connect.tira_con.commit()
     return True
 
+@app.route("/delete_room_thing", methods=["POST"])
+def delete_room_thing():
+    # aktivoi remove_room function javascriptistä
+    user_email = manage_session.isloggedin()
+    if user_email is None:
+        return jsonify({"success": False, "message": "Et ole kirjautunut sisään"})
+
+    delete_room_num = request.json.get("num")
+
+    room_success = remove_room(delete_room_num)
+    # palauttaa False jos ei poistunut, ja True jos poistui
+
+    # viesti käyttäjälle
+    if not room_success:
+        return jsonify({"success": True, "message": "Huonetta ei poistettu"})
+    if room_success:
+        return jsonify({"success": True, "message": "Huone poistettu"})
+
+def remove_room(room_number):
+    #funktio joka poistaa huoneen jos se on olemassa
+    existing_room = connect.tira_cur.execute("SELECT number FROM Rooms WHERE number = ?", [room_number]).fetchone()
+    if existing_room is None:
+        return False
+    # jos huone jota poistetaan ei ole olemassa, palauttaa False
+    try:
+        connect.tira_cur.execute("DELETE FROM rooms WHERE number = ?", [room_number])
+        connect.tira_con.commit()
+        return True
+    except Exception as e:
+        print(e)
+        return True
+
+
 def favroom_selector(room_number):
     # tämä skripti käytetään jotta voi asettaa jonkun hunoeen käyttäjän oletushuoneeksi
     # pane room_number kohtaan huoneen numero esim 218

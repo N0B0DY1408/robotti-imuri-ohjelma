@@ -87,7 +87,7 @@ Hyväksyn että työpaikka vakoilee miten siivoan huonettani
 <br>
 
 <button type="submit" class="btn btn-primary">Lähetä</button>
-<button type="button" class="btn btn-basic" onclick="toggleModalMode()">Syötä koodi</button>
+<button type="button" class="btn btn-basic" onclick="toggleLoginModalMode()">Syötä koodi</button>
 
 </form>
 </div>
@@ -110,7 +110,7 @@ Hyväksyn että työpaikka vakoilee miten siivoan huonettani
 <br>
 
 <button type="submit" class="btn btn-success">Vahvista</button>
-<button type="button" class="btn btn-basic" onclick="toggleModalMode()">Takaisin</button>
+<button type="button" class="btn btn-basic" onclick="toggleLoginModalMode()">Takaisin</button>
 
 
 </form>
@@ -134,11 +134,11 @@ Hyväksyn että työpaikka vakoilee miten siivoan huonettani
 
 <div class="modal-header">
 <button type="button" class="close" data-dismiss="modal">&times;</button>
-<h4 class="modal-title" id="modalTitle">Uusi huone/Aseta oletus</h4>
+<h4 class="modal-title" id="roomModalTitle">Uusi huone/Aseta oletus</h4>
 
-<div id="emailView">
+<div id="newRoomView">
 <form id="addRoomForm">
-<select id="new_room_num" name="new_room_num" placeholder="matti.meikalainen@student.kpedu.fi">
+<select id="new_room_num" name="new_room_num" placeholder="123">
 {% for rooms in room_display %}
 {% for room in rooms %}
 <option value="{{room.num}}">{{room.num}}</option>
@@ -149,6 +149,26 @@ Hyväksyn että työpaikka vakoilee miten siivoan huonettani
 <label for="new_room_as_fav">Aseta oletukseksi</label>
 <br>
 <button type="submit" class="btn btn-primary">Lähetä</button>
+<button type="button" class="btn btn-basic" onclick="toggleRoomModalMode()">Poista huone</button>
+
+
+</form>
+</div>
+
+<!-- DELETE ROOM -->
+<div id="deleteView" style="display: none;">
+<form id="deleteRoomForm">
+<select id="delete_room_num" name="delete_room_num" placeholder="123">
+{% for rooms in room_display %}
+{% for room in rooms %}
+<option value="{{room.num}}">{{room.num}}</option>
+{% endfor %}
+{% endfor %}
+</select>
+<br>
+<button type="submit" class="btn btn-primary">Lähetä</button>
+<button type="button" class="btn btn-basic" onclick="toggleRoomModalMode()">Lisää huone</button>
+
 
 </form>
 </div>
@@ -164,7 +184,7 @@ Hyväksyn että työpaikka vakoilee miten siivoan huonettani
 
 <div class="modal-header">
 <button type="button" class="close" data-dismiss="modal">&times;</button>
-<h4 class="modal-title" id="modalTitle">Historia</h4>
+<h4 class="modal-title">Historia</h4>
 <div class="history_box">
     <table class="table table-striped" id="table_sort">
         <tr class="history_top_row">
@@ -183,9 +203,7 @@ Hyväksyn että työpaikka vakoilee miten siivoan huonettani
         {% endfor %}
     </table>
 </div>
-<div id="emailView">
 
-</div>
 </div>
 </div>
 </div>
