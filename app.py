@@ -57,7 +57,7 @@ def email_login():
     if request.method == "POST":
 
         user_email = request.json.get("email")
-        if not user_email or "@student.kpedu.fi" not in user_email:
+        if not user_email or "kpedu.fi" not in user_email:
             return jsonify({"success": False, "message": "Syötä kpedu-sähköposti"})
             # palauttaa script.js että ei toiminut ja näyttää viestin
 
