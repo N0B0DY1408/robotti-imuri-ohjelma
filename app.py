@@ -37,9 +37,9 @@ def id_generator(size=4, chars=string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
     # id generator email koodeihin
 
-@app.route("/apua")
-def helpsite():
-    return render_template("help.html")
+#@app.route("/apua")
+#def helpsite():
+#    return render_template("help.html")
 
 
 @app.route("/", methods=["GET", "POST"])
